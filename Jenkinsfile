@@ -7,7 +7,6 @@ pipeline {
 
   environment {
     JAVA_HOME = 'tool jdk21'  // 환경 변수도 jdk21로 설정
-    IMAGE_NAME = "${env.BRANCH_NAME.replace('/', '_')}_${getGitCommitPretty()}"  // 브랜치 이름과 Git 커밋 정보로 이미지 이름 생성
     ECR_URL = '481665105550.dkr.ecr.ap-northeast-2.amazonaws.com'  // ECR URL
     ECR_REPOSITORY = 'drinkhere/spring-server'  // ECR 리포지토리 이름
   }
@@ -29,16 +28,19 @@ pipeline {
     stage('Push image') {
       steps {
         script {
+          // 현재 날짜를 기반으로 IMAGE_NAME 생성 (yyyyMMdd-HHmmss 형식)
+          def imageName = sh(script: 'date +%Y%m%d-%H%M%S', returnStdout: true).trim()
+
           // AWS ECR에 로그인 후 Docker 이미지 빌드 및 푸시
           docker.withRegistry("https://${ECR_URL}", 'awsCredentials') {
             // ECR 리포지토리 주소와 IMAGE_NAME을 사용하여 이미지 빌드
-            app = docker.build("${ECR_URL}/${ECR_REPOSITORY}:${IMAGE_NAME}")
+            app = docker.build("${ECR_URL}/${ECR_REPOSITORY}:${imageName}")
             // 빌드된 이미지를 ECR에 푸시
-            app.push("${IMAGE_NAME}")
+            app.push("${imageName}")
           }
 
           // 푸시 후 로컬에서 해당 이미지를 삭제
-          sh "docker rmi ${ECR_URL}/${ECR_REPOSITORY}:${IMAGE_NAME}"
+          sh "docker rmi ${ECR_URL}/${ECR_REPOSITORY}:${imageName}"
         }
       }
     }
