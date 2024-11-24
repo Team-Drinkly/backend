@@ -15,12 +15,22 @@ pipeline {
                 sh 'java -version'  // Java 버전 확인
             }
         }
-        stage('Build') {
+        stage('ECR Login') {
+            steps {
+                script {
+                    // ECR 로그인
+                    withCredentials([aws(credentialsId: "${AWS_CREDENTIAL_NAME}", region: "${REGION}")]) {
+                        sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                    }
+                }
+            }
+        }
+        stage('Build & Docker Image') {
             steps {
                 sh './gradlew clean :execute:bootJar' // Gradle 빌드
             }
         }
-        stage('Push image') {
+        stage('Push Docker Image to ECR') {
             steps {
                 script {
                     // 현재 날짜를 기반으로 IMAGE_NAME 생성 (yyyyMMdd-HHmmss 형식)
