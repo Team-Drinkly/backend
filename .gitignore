@@ -246,6 +246,5 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-**/src/main/resources/application-rds-*.yml
-module-api/auth-api/src/main/resources/application-auth-*.yml
+**/src/main/resources/application-rds-local.yml
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,intellij+all

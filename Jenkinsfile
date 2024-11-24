@@ -9,10 +9,29 @@ pipeline {
         AWS_CREDENTIAL_NAME = 'awsCredentials'
         REGION = 'ap-northeast-2'
     }
+    parameters {
+        string(name: 'db_url', defaultValue: '', description: 'Database URL')
+        string(name: 'db_username', defaultValue: '', description: 'Database Username')
+        string(name: 'db_password', defaultValue: '', description: 'Database Password')
+    }
+
     stages {
         stage('Check Java Version') {
             steps {
                 sh 'java -version'  // Java 버전 확인
+            }
+        }
+        stage('Prepare Secret Variable') {
+            steps {
+                script {
+                    // 환경 변수로 설정하고 템플릿 파일에 변수 대입
+                    sh """
+                        export DB_URL=${params.db_url}
+                        export DB_USERNAME=${params.db_username}
+                        export DB_PASSWORD=${params.db_password}
+                        envsubst < domain/domain-rds/src/main/resources/application-rds-prod.yml.template > domain/domain-rds/src/main/resources/application-rds-prod.yml
+                    """
+                }
             }
         }
         stage('ECR Login') {

@@ -3,7 +3,7 @@ spring:
     name: execute
 
   profiles:
-    active: local # default
+    active: local # 기본 프로파일을 'local'로 설정
   servlet:
     multipart:
       max-file-size: 20MB
@@ -22,6 +22,21 @@ logging:
   level:
     org.springframework.web: DEBUG
     org.springframework.boot.web.servlet: DEBUG
+    root: info
+    com.drinkhere: debug
 
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - application-rds-prod.yml
+      - application-hc-prod.yml
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.boot.web.servlet: DEBUG
     root: info
     com.drinkhere: debug
