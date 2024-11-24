@@ -18,26 +18,24 @@ pipeline {
                 sh './gradlew clean build'
             }
         }
-    }
+        stage('Push image') { // Push image stage가 stages 내에 포함됨
+            steps {
+                script {
+                    // 현재 날짜를 기반으로 IMAGE_NAME 생성 (yyyyMMdd-HHmmss 형식)
+                    def imageName = sh(script: 'date +%Y%m%d-%H%M%S', returnStdout: true).trim()
 
-    stage('Push image') {
-      steps {
-        script {
-          // 현재 날짜를 기반으로 IMAGE_NAME 생성 (yyyyMMdd-HHmmss 형식)
-          def imageName = sh(script: 'date +%Y%m%d-%H%M%S', returnStdout: true).trim()
+                    // AWS ECR에 로그인 후 Docker 이미지 빌드 및 푸시
+                    docker.withRegistry("https://${ECR_URL}", 'awsCredentials') {
+                        // ECR 리포지토리 주소와 IMAGE_NAME을 사용하여 이미지 빌드
+                        app = docker.build("${ECR_URL}/${ECR_REPOSITORY}:${imageName}")
+                        // 빌드된 이미지를 ECR에 푸시
+                        app.push("${imageName}")
+                    }
 
-          // AWS ECR에 로그인 후 Docker 이미지 빌드 및 푸시
-          docker.withRegistry("https://${ECR_URL}", 'awsCredentials') {
-            // ECR 리포지토리 주소와 IMAGE_NAME을 사용하여 이미지 빌드
-            app = docker.build("${ECR_URL}/${ECR_REPOSITORY}:${imageName}")
-            // 빌드된 이미지를 ECR에 푸시
-            app.push("${imageName}")
-          }
-
-          // 푸시 후 로컬에서 해당 이미지를 삭제
-          sh "docker rmi ${ECR_URL}/${ECR_REPOSITORY}:${imageName}"
+                    // 푸시 후 로컬에서 해당 이미지를 삭제
+                    sh "docker rmi ${ECR_URL}/${ECR_REPOSITORY}:${imageName}"
+                }
+            }
         }
-      }
     }
-  }
 }
