@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                sh './gradlew clean :execute:bootJar'
             }
         }
         stage('Push image') { // Push image stage가 stages 내에 포함됨
