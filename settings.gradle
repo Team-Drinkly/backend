@@ -1,0 +1,13 @@
+rootProject.name = 'server'
+
+// 공통 모듈
+include 'common'
+
+// Domain 모듈
+include 'domain:domain-rds'
+
+// API 모듈
+include 'api:api-health-check'
+
+// 실행 모듈
+include 'execute'

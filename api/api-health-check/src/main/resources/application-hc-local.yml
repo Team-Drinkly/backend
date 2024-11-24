@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: api-health-check
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
