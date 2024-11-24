@@ -27,7 +27,7 @@ pipeline {
                     def imageName = sh(script: 'date +%Y%m%d-%H%M%S', returnStdout: true).trim()
 
                     // AWS ECR에 로그인 후 Docker 이미지 빌드 및 푸시
-                    docker.withRegistry("https://${ECR_URL}", 'awsCredentials') {
+                    docker.withRegistry("https://${ECR_URL}", 'ecr:ap-northeast-2:awsCredentials') {
                         // ECR 리포지토리 주소와 IMAGE_NAME을 사용하여 이미지 빌드
                         app = docker.build("${ECR_URL}/${ECR_REPOSITORY}:${imageName}")
                         // 빌드된 이미지를 ECR에 푸시
