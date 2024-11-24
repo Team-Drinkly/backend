@@ -15,11 +15,11 @@ pipeline {
                 sh 'java -version'  // Java 버전 확인
             }
         }
-//         stage('Build') {
-//             steps {
-//                 sh './gradlew clean :execute:bootJar' // Gradle 빌드
-//             }
-//         }
+        stage('Build') {
+            steps {
+                sh './gradlew clean :execute:bootJar' // Gradle 빌드
+            }
+        }
         stage('Push image') {
             steps {
                 script {
