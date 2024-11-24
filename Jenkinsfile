@@ -6,6 +6,8 @@ pipeline {
     environment {
         JAVA_HOME = '/var/lib/jenkins/tools/hudson.model.JDK/jdk21/amazon-corretto-21.0.3.9.1-linux-x64'
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
+        ECR_URL = '481665105550.dkr.ecr.ap-northeast-2.amazonaws.com'  // ECR URL
+        ECR_REPOSITORY = 'drinkhere/spring-server'  // ECR 리포지토리 이름
     }
     stages {
         stage('Check Java Version') {
