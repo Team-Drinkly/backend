@@ -20,9 +20,6 @@ pipeline {
     }
 
     stage('Build') {
-      when {
-        branch 'main'  // main 브랜치에서만 실행
-      }
       steps {
         sh 'java -version'  // Java 21 버전 확인
         sh './gradlew clean build'  // Gradle 빌드
@@ -30,9 +27,6 @@ pipeline {
     }
 
     stage('Push image') {
-      when {
-        branch 'main'  // main 브랜치에서만 실행
-      }
       steps {
         script {
           // AWS ECR에 로그인 후 Docker 이미지 빌드 및 푸시
