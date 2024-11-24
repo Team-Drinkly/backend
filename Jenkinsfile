@@ -2,11 +2,10 @@ pipeline {
   agent any
 
   tools {
-    jdk 'jdk21'  // Java 21 사용.
+    jdk ('jdk21')  // Java 21 사용.
   }
 
   environment {
-    JAVA_HOME = 'tool jdk21'  // 환경 변수도 jdk21로 설정
     ECR_URL = '481665105550.dkr.ecr.ap-northeast-2.amazonaws.com'  // ECR URL
     ECR_REPOSITORY = 'drinkhere/spring-server'  // ECR 리포지토리 이름
   }
