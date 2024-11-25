@@ -59,3 +59,12 @@ configure(subprojects.findAll { it.name != 'common' && it.name != 'execute' }) {
 		implementation project(':common')
 	}
 }
+
+// 서브모듈 설정파일 복사
+task copyPrivate(type: Copy) {
+	copy {
+		from './backend-submodule'
+		include "*.yml"
+		into 'domain/domain-rds/src/main/resources'
+	}
+}

@@ -16,11 +16,13 @@ pipeline {
     }
 
     stages {
+
         stage('Check Java Version') {
             steps {
                 sh 'java -version'  // Java 버전 확인
             }
         }
+
         stage('Prepare Secret Variable') {
             steps {
                 script {
@@ -34,6 +36,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Build & Docker Image') {
+            steps {
+                sh './gradlew clean :execute:bootJar' // Gradle 빌드
+            }
+        }
+
         stage('ECR Login') {
             steps {
                 script {
@@ -44,11 +53,7 @@ pipeline {
                 }
             }
         }
-        stage('Build & Docker Image') {
-            steps {
-                sh './gradlew clean :execute:bootJar' // Gradle 빌드
-            }
-        }
+
         stage('Push Docker Image to ECR') {
             steps {
                 script {
@@ -66,5 +71,41 @@ pipeline {
                 }
             }
         }
+
+//         stage('Update ECS Task Definition') {
+//             steps {
+//                 script {
+//                     // ECS 작업 정의에 새로운 Docker 이미지로 업데이트
+//                     def newTaskDefinition = sh(script: """
+//                         aws ecs register-task-definition --family ${ECS_TASK_DEFINITION} \
+//                             --container-definitions '[{
+//                                 "name": "spring-server",
+//                                 "image": "${ECR_URL}/${ECR_REPOSITORY}:${imageName}",
+//                                 "essential": true,
+//                                 "memory": 512,
+//                                 "cpu": 256
+//                             }]'
+//                     """, returnStdout: true).trim()
+//
+//                     echo "Updated ECS Task Definition: ${newTaskDefinition}"
+//                 }
+//             }
+//         }
+
+//         stage('Deploy to ECS with Blue/Green Deployment') {
+//             steps {
+//                 script {
+//                     // ECS 서비스에서 블루-그린 배포 수행
+//                     def updateService = sh(script: """
+//                         aws ecs update-service --cluster ${ECS_CLUSTER_NAME} \
+//                             --service ${ECS_SERVICE_NAME} \
+//                             --task-definition ${newTaskDefinition} \
+//                             --force-new-deployment
+//                     """, returnStdout: true).trim()
+//
+//                     echo "ECS Service updated: ${updateService}"
+//                 }
+//             }
+//         }
     }
 }

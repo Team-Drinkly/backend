@@ -247,4 +247,8 @@ out/
 !**/src/test/**/out/
 
 **/src/main/resources/application-rds-local.yml
+**/src/main/resources/application-rds-prod.yml
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,intellij+all
+
+# 깃허브 서브모듈 관련 폴더 ignore
+backend-submodule/

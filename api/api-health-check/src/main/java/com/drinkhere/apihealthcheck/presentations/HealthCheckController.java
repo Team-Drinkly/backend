@@ -10,11 +10,7 @@ public class HealthCheckController {
 
     @GetMapping
     public String healthCheck() {
-        return "OK";
+        return "Green - Second Version Application";
     }
 
-    @GetMapping("/2")
-    public String healthCheck2() {
-        return "OK2";
-    }
 }
