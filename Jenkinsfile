@@ -18,9 +18,20 @@ pipeline {
             }
         }
 
-        stage('Git Clone Sub-Module') {
+        stage('Checkout SCM with Submodules') {
             steps {
-                git branch: 'main', credentialsId: 'githubCredentials', url: 'https://github.com/DrinkHere/backend-submodule.git'
+                // 서브모듈도 포함하여 클론
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [
+                        [$class: 'SubmoduleOption', recursiveSubmodules: true] // 서브모듈 재귀적으로 클론
+                    ],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/DrinkHere/backend.git',
+                        credentialsId: 'githubCredentials'
+                    ]]
+                ])
             }
         }
 
