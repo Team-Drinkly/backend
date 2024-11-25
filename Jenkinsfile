@@ -78,38 +78,45 @@ pipeline {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIAL_NAME}"]]) {
                         sh "aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION --query 'taskDefinition' > task-definition.json"
                         sh "jq '.containerDefinitions[0].image = \"${ECR_URL}/${ECR_REPOSITORY}:${env.IMAGE_NAME}\"' task-definition.json > updated-task-definition.json"
+                        sh
                     }
                 }
             }
         }
 
-//         stage('Deploy to ECS with Blue/Green Deployment') {
-//             steps {
-//                 script {
-//                     // AWS 자격 증명이 설정된 상태에서 AWS CLI 명령어 실행
-//                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIAL_NAME}"]]) {
-//                         // ECS 서비스 업데이트
-//                         def updateService = sh(script: """
-//                             aws ecs update-service --cluster $ECS_CLUSTER \
-//                                 --service $ECS_SERVICE \
-//                                 --task-definition file://updated-task-definition.json
-//                         """, returnStdout: true).trim()
-//
-//                         echo "ECS Service updated: ${updateService}"
-//
-//                         // CodeDeploy 배포 실행
-//                         def deploy = sh(script: """
-//                             aws deploy create-deployment \
-//                                 --application-name $CODEDEPLOY_APPLICATION \
-//                                 --deployment-group-name $CODEDEPLOY_DEPLOYMENT_GROUP \
-//                                 --revision file://updated-task-definition.json \
-//                                 --description "Deployment for ${env.IMAGE_NAME}"
-//                         """, returnStdout: true).trim()
-//
-//                         echo "CodeDeploy deployment initiated: ${deploy}"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Deploy to ECS with Blue/Green Deployment') {
+           steps {
+               script {
+                   withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIAL_NAME}"]]) {
+                       // Get the task definition ARN
+                       def taskDefArn = sh(script: "aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION --query 'taskDefinition.taskDefinitionArn' --region ${REGION} --output text", returnStdout: true).trim()
+
+                       echo "Using task definition ARN: ${taskDefArn}"
+
+                       // Update ECS service
+                       def updateService = sh(script: """
+                           aws ecs update-service --cluster $ECS_CLUSTER \
+                               --service $ECS_SERVICE \
+                               --task-definition ${taskDefArn} \
+                               --region ${REGION}
+                       """, returnStdout: true).trim()
+
+                       echo "ECS Service updated: ${updateService}"
+
+                       // Create CodeDeploy deployment
+                       def deploy = sh(script: """
+                           aws deploy create-deployment \
+                               --application-name $CODEDEPLOY_APPLICATION \
+                               --deployment-group-name $CODEDEPLOY_DEPLOYMENT_GROUP \
+                               --revision file://updated-task-definition.json \
+                               --description "Deployment for ${env.IMAGE_NAME}" \
+                               --region ${REGION}
+                       """, returnStdout: true).trim()
+
+                       echo "CodeDeploy deployment initiated: ${deploy}"
+                   }
+               }
+           }
+        }
     }
 }
