@@ -76,12 +76,8 @@ pipeline {
                 script {
                     // `env.IMAGE_NAME`을 사용하여 ECS Task Definition에 최신 이미지 반영
                     sh """
-                        aws ecs describe-task-definition \\
-                            --task-definition $ECS_TASK_DEFINITION \\
-                            --query taskDefinition > task-definition.json
-
-                        jq '.containerDefinitions[0].image = "${ECR_URL}/${ECR_REPOSITORY}:${env.IMAGE_NAME}"' \\
-                            task-definition.json > updated-task-definition.json
+                        aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION --query 'taskDefinition' > task-definition.json
+                        jq '.containerDefinitions[0].image = "${ECR_URL}/${ECR_REPOSITORY}:${env.IMAGE_NAME}"' task-definition.json > updated-task-definition.json
                     """
                 }
             }
@@ -113,6 +109,5 @@ pipeline {
                 }
             }
         }
-
     }
 }
