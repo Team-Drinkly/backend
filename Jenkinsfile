@@ -8,15 +8,14 @@ pipeline {
         ECR_REPOSITORY = 'drinkhere/spring-server'  // ECR 리포지토리 이름
         AWS_CREDENTIAL_NAME = 'awsCredentials'
         REGION = 'ap-northeast-2'
+        ECS_SERVICE = 'drinkhere-ecs-service'  // ECS 서비스 이름
+        ECS_CLUSTER = 'DrinkhereCluster'  // ECS 클러스터 이름
+        ECS_TASK_DEFINITION = 'drinkhere-ecs-td'  // ECS 작업 정의 이름
+        CODEDEPLOY_APPLICATION = 'AppECS-DrinkhereCluster-drinkhere-ecs-service' // CodeDeploy 애플리케이션 이름
+        CODEDEPLOY_DEPLOYMENT_GROUP = 'DgpECS-DrinkhereCluster-drinkhere-ecs-service' // CodeDeploy 배포 그룹 이름
     }
 
     stages {
-
-        stage('Check Java Version') {
-            steps {
-                sh 'java -version'  // Java 버전 확인
-            }
-        }
 
         stage('Checkout SCM with Submodules') {
             steps {
@@ -35,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Build & Docker Image') {
+        stage('Build Spring Boot Project to Jar File') {
             steps {
                 sh './gradlew clean :execute:bootJar' // Gradle 빌드
             }
@@ -52,7 +51,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to ECR') {
+        stage('Build Docker Image & Push to ECR') {
             steps {
                 script {
                     // 현재 날짜를 기반으로 IMAGE_NAME 생성 (yyyyMMdd-HHmmss 형식)
@@ -66,44 +65,54 @@ pipeline {
                     }
                     // 푸시 후 로컬에서 Docker 이미지 삭제
                     sh "docker rmi ${ECR_URL}/${ECR_REPOSITORY}:${imageName}"
+
+                    env.IMAGE_NAME = imageName
                 }
             }
         }
 
-//         stage('Update ECS Task Definition') {
-//             steps {
-//                 script {
-//                     // ECS 작업 정의에 새로운 Docker 이미지로 업데이트
-//                     def newTaskDefinition = sh(script: """
-//                         aws ecs register-task-definition --family ${ECS_TASK_DEFINITION} \
-//                             --container-definitions '[{
-//                                 "name": "spring-server",
-//                                 "image": "${ECR_URL}/${ECR_REPOSITORY}:${imageName}",
-//                                 "essential": true,
-//                                 "memory": 512,
-//                                 "cpu": 256
-//                             }]'
-//                     """, returnStdout: true).trim()
-//
-//                     echo "Updated ECS Task Definition: ${newTaskDefinition}"
-//                 }
-//             }
-//         }
+        stage('Update Drinkhere ECS Task Definition') {
+            steps {
+                script {
+                    // `env.IMAGE_NAME`을 사용하여 ECS Task Definition에 최신 이미지 반영
+                    sh """
+                        aws ecs describe-task-definition \\
+                            --task-definition $ECS_TASK_DEFINITION \\
+                            --query taskDefinition > task-definition.json
 
-//         stage('Deploy to ECS with Blue/Green Deployment') {
-//             steps {
-//                 script {
-//                     // ECS 서비스에서 블루-그린 배포 수행
-//                     def updateService = sh(script: """
-//                         aws ecs update-service --cluster ${ECS_CLUSTER_NAME} \
-//                             --service ${ECS_SERVICE_NAME} \
-//                             --task-definition ${newTaskDefinition} \
-//                             --force-new-deployment
-//                     """, returnStdout: true).trim()
-//
-//                     echo "ECS Service updated: ${updateService}"
-//                 }
-//             }
-//         }
+                        jq '.containerDefinitions[0].image = "${ECR_URL}/${ECR_REPOSITORY}:${env.IMAGE_NAME}"' \\
+                            task-definition.json > updated-task-definition.json
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to ECS with Blue/Green Deployment') {
+            steps {
+                script {
+                    // ECS 작업 정의를 CodeDeploy로 배포
+                    def updateService = sh(script: """
+                        aws ecs update-service --cluster $ECS_CLUSTER \
+                            --service $ECS_SERVICE \
+                            --task-definition file://updated-task-definition.json \
+                            --deployment-controller type=CODE_DEPLOY
+                    """, returnStdout: true).trim()
+
+                    echo "ECS Service updated: ${updateService}"
+
+                    // CodeDeploy 배포 실행
+                    def deploy = sh(script: """
+                        aws deploy create-deployment \
+                            --application-name $CODEDEPLOY_APPLICATION \
+                            --deployment-group-name $CODEDEPLOY_DEPLOYMENT_GROUP \
+                            --revision file://updated-task-definition.json \
+                            --description "Deployment for ${env.IMAGE_NAME}"
+                    """, returnStdout: true).trim()
+
+                    echo "CodeDeploy deployment initiated: ${deploy}"
+                }
+            }
+        }
+
     }
 }
