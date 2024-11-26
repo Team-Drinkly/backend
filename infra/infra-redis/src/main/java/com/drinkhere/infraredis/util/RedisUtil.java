@@ -1,35 +1,48 @@
 package com.drinkhere.infraredis.util;
 
-import com.drinkhere.infraredis.config.JsonComponent;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Component
 public class RedisUtil {
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    final RedisTemplate<String, String> redisTemplate;
-    final JsonComponent jsonComponent;
-
-    public <T> T getObjectByKey(String key, Class<T> clazz) {
-        ValueOperations<String, String> vop = redisTemplate.opsForValue();
-
-        String jsonString = vop.get(key);
-        if (StringUtils.isNotEmpty(jsonString)) {
-            return jsonComponent.jsonToObject(jsonString, clazz);
-        } else {
-            return null;
-        }
+    public void saveAsValue(String key, Object val, Long time, TimeUnit timeUnit) {
+        redisTemplate.opsForValue().set(key, val, time, timeUnit);
     }
 
-    public void setObjectByKey(String key, Object obj) {
-        ValueOperations<String, String> vop = redisTemplate.opsForValue();
-        vop.set(key, jsonComponent.objectToJson(obj));
-        redisTemplate.expire(key, 7, TimeUnit.DAYS);
+    public void appendToRecentlyViewedAnnouncement(String key, String newValue) {
+        long RECENT_VIEWED_ANNOUNCEMENT_LIMIT = 20;
+
+        Object mostRecentlyViewedValue = redisTemplate.opsForList().index(key, 0);
+        if (Objects.equals(mostRecentlyViewedValue, newValue)) {
+            return;
+        }
+        if (Objects.equals(redisTemplate.opsForList().size(key), RECENT_VIEWED_ANNOUNCEMENT_LIMIT)) {
+            redisTemplate.opsForList().rightPop(key);
+        }
+        redisTemplate.opsForList().leftPush(key, newValue);
+    }
+
+    public boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    public Object get(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public List<Object> getList(String key) {
+        return redisTemplate.opsForList().range(key, 0, -1);
+    }
+
+    public boolean delete(String key) {
+        return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
 }

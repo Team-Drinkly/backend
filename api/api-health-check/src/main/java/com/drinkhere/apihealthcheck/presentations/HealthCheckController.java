@@ -20,8 +20,9 @@ public class HealthCheckController {
     @GetMapping("/redis")
     public String redisConnectionCheck() {
         // Redis에서 'id1' 키로 값을 가져옵니다.
-        String value = redisUtil.getObjectByKey("id1", String.class);
-
+//        String value = redisUtil.getObjectByKey("id1", String.class);
+        String value = (String) redisUtil.get("id1");
+        System.out.println(value);
         // Redis에서 가져온 값이 있을 경우 반환, 없으면 기본 메시지 반환
         if (value != null) {
             return value;
