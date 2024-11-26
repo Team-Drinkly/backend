@@ -17,7 +17,7 @@ public class HealthCheckController {
         return "This Turn is Blue!";
     }
 
-    @GetMapping("redis")
+    @GetMapping("/redis")
     public String redisConnectionCheck() {
         // Redis에서 'id1' 키로 값을 가져옵니다.
         String value = (String) redisUtil.getValue("id1");
