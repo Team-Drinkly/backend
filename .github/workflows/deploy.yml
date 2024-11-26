@@ -23,10 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository including submodules
-      - name: Checkout repository with submodules
+      - name: Checkout submodules
         uses: actions/checkout@v3
         with:
-          submodules: true  # Checkout submodules recursively
+          submodules: recursive
+          token: ${{ secrets.GIT_TOKEN_FOR_SUBMODULE }}
 
       # Set up JDK 21 for the Spring Boot project
       - name: Set up JDK 21
