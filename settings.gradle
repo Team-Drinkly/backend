@@ -6,6 +6,9 @@ include 'common'
 // Domain 모듈
 include 'domain:domain-rds'
 
+// Infra 모듈
+include 'infra:infra-redis'
+
 // API 모듈
 include 'api:api-health-check'
 

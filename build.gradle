@@ -64,7 +64,13 @@ configure(subprojects.findAll { it.name != 'common' && it.name != 'execute' }) {
 task copyPrivate(type: Copy) {
 	copy {
 		from './backend-submodule'
-		include "*.yml"
+		include "application-rds-prod.yml"
 		into 'domain/domain-rds/src/main/resources'
+	}
+
+	copy {
+		from './backend-submodule'
+		include "application-redis-prod.yml"
+		into 'infra/infra-redis/src/main/resources'
 	}
 }
