@@ -16,6 +16,7 @@ spring:
       on-profile: local
     import:
       - application-rds-local.yml
+      - application-redis-local.yml
       - application-hc-local.yml
 
 logging:
@@ -32,6 +33,7 @@ spring:
       on-profile: prod
     import:
       - application-rds-prod.yml
+      - application-redis-prod.yml
       - application-hc-prod.yml
 
 logging:
