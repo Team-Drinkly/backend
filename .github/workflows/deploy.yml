@@ -9,6 +9,12 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
+  ECS_CLUSTER: DrinkhereCluster
+  ECS_SERVICE: drinkhere-ecs-service
+  CONTAINER_NAME: drinkhere-springboot-server
+  APP_SPEC: appspec.yml
+  CODEDEPLOY_APPLICATION: AppECS-DrinkhereCluster-drinkhere-ecs-service
+  CODEDEPLOY_DEPLOYMENT_GROUP: DgpECS-DrinkhereCluster-drinkhere-ecs-service
 
 jobs:
   build:
@@ -55,14 +61,14 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          # 현재 날짜와 시간으로 태그 생성 (예: 2024-11-26_14-30-00)
-          IMAGE_TAG=$(date +'%Y-%m-%d_%H-%M-%S')
+          # 현재 날짜와 시간으로 태그 생성 (예: 20241126_143000)
+          IMAGE_TAG=$(date +'%Y%m%d_%H%M%S')
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV  # 환경 변수에 IMAGE_TAG 저장
           
           # Docker 이미지를 빌드하고 푸시
           docker build --build-arg JAR_FILE=build/libs/*.jar -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
       #  $GITHUB_ENV : 작업(Job) 내 모든 스텝에서 사용 가능 - $VARIABLE 환경 변수로 직접 참조
@@ -79,16 +85,17 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: ${{ secrets.CONTAINER_NAME }}
-          image: ${{ env.IMAGE }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
       # Deploy the updated ECS task definition
       - name: Deploy ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ secrets.ECS_SERVICE }}
-          cluster: ${{ secrets.ECS_CLUSTER }}
-          codedeploy-appspec: appspec.yml
-          codedeploy-application: ${{ secrets.CODEDEPLOY_APPLICATION }}
-          codedeploy-deployment-group: ${{ secrets.CODEDEPLOY_DEPLOYMENT_GROUP }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+          codedeploy-appspec: ${{ env.APP_SPEC }}
+          codedeploy-application: ${{ env.CODEDEPLOY_APPLICATION }}
+          codedeploy-deployment-group: ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}
