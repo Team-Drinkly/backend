@@ -14,7 +14,7 @@ public class HealthCheckController {
     private final RedisUtil redisUtil;
     @GetMapping
     public String healthCheck() {
-        return "This Turn is Blue!";
+        return "This Turn is Green!";
     }
 
     @GetMapping("/redis")
