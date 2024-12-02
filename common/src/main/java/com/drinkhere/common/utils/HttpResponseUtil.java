@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class HttpResponseUtil {
 
