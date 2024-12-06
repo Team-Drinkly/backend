@@ -246,11 +246,15 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+# End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,intellij+all
 **/src/main/resources/application-rds-local.yml
 **/src/main/resources/application-rds-prod.yml
-# End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,intellij+all
+
 **/src/main/resources/application-redis-local.yml
 **/src/main/resources/application-redis-prod.yml
+
+**/src/main/resources/application-s3-local.yml
+**/src/main/resources/application-s3-prod.yml
 
 # 깃허브 서브모듈 관련 폴더 ignore
 backend-submodule/

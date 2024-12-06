@@ -1,12 +1,12 @@
 spring:
   application:
-    name: api-health-check
+    name: monitoring
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus
+        include: health, metrics, prometheus
   metrics:
     export:
       cors:

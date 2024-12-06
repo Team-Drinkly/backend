@@ -73,4 +73,10 @@ task copyPrivate(type: Copy) {
 		include "application-redis-prod.yml"
 		into 'infra/infra-redis/src/main/resources'
 	}
+
+	copy {
+		from './backend-submodule'
+		include "application-s3-prod.yml"
+		into 'infra/infra-s3/src/main/resources'
+	}
 }
