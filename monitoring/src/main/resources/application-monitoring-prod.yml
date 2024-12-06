@@ -1,6 +1,6 @@
 spring:
   application:
-    name: api-health-check
+    name: monitoring
 
 management:
   endpoints:

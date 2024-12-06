@@ -3,6 +3,9 @@ rootProject.name = 'server'
 // 공통 모듈
 include 'common'
 
+// 모니터링 모듈
+include 'monitoring'
+
 // Domain 모듈
 include 'domain:domain-rds'
 

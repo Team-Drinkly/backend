@@ -5,5 +5,5 @@ dependencies {
     implementation project(':domain:domain-rds')
     implementation project(':infra:infra-redis')
     implementation project(':infra:infra-s3')
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation project(':monitoring')
 }
