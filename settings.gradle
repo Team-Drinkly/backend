@@ -18,3 +18,6 @@ include 'api:api-health-check'
 
 // 실행 모듈
 include 'execute'
+include 'api:api-auth'
+findProject(':api:api-auth')?.name = 'api-auth'
+
