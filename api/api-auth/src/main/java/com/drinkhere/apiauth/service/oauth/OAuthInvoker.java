@@ -8,9 +8,7 @@ import com.drinkhere.domainrds.auth.dto.OAuthResponse;
 import com.drinkhere.domainrds.auth.dto.OAuthUserInfo;
 import com.drinkhere.domainrds.auth.handler.request.OAuthSuccessEvent;
 import com.drinkhere.domainrds.auth.jwt.JWTProvider;
-import com.drinkhere.domainrds.auth.jwt.PrivateClaims;
 import com.drinkhere.domainrds.auth.jwt.TokenType;
-import com.drinkhere.domainrds.auth.service.OAuthQueryService;
 import com.drinkhere.domainrds.auth.service.TokenSaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,14 +23,11 @@ public class OAuthInvoker {
     private final JWTProvider jwtProvider;
     private final TokenSaveService tokenSaveService;
     private final ApplicationEventPublisher publisher;
-    private final OAuthQueryService oAuthQueryService;
 
     public OAuthResponse execute(OAuthRequest request) {
         final OAuthUserInfo oAuthUserInfo = attemptLogin(request);
         publishEvent(oAuthUserInfo, request);
-        return generateServerAuthenticationTokens(
-                PrivateClaims.UserClaims.of(oAuthQueryService.findBySub(oAuthUserInfo.getSub()).getUserId())
-        );
+        return generateServerAuthenticationTokens(oAuthUserInfo.getSub());
     }
 
     private void publishEvent(OAuthUserInfo oAuthUserInfo, OAuthRequest request) {
@@ -53,9 +48,18 @@ public class OAuthInvoker {
         throw new AuthException(AuthErrorCode.OAUTH_FAIL);
     }
 
-    private OAuthResponse generateServerAuthenticationTokens(PrivateClaims.UserClaims userClaims) {
-        final JWTProvider.Token token = jwtProvider.generateToken(userClaims);
-        tokenSaveService.saveToken(token.refreshToken(), TokenType.REFRESH_TOKEN, userClaims.getUserId());
+    private OAuthResponse generateServerAuthenticationTokens(String sub) {
+        // 토큰 생성
+        final JWTProvider.Token token = jwtProvider.generateToken(sub);
+
+        // Redis에 REFRESH_TOKEN 저장
+        tokenSaveService.saveToken(token.refreshToken(), TokenType.REFRESH_TOKEN, sub);
+
+        // OAuthResponse 생성
+        return buildOAuthResponse(token);
+    }
+
+    private OAuthResponse buildOAuthResponse(JWTProvider.Token token) {
         final String accessToken = AuthConsts.AUTHENTICATION_TYPE_PREFIX + token.accessToken();
         final String refreshToken = AuthConsts.AUTHENTICATION_TYPE_PREFIX + token.refreshToken();
         return OAuthResponse.builder()

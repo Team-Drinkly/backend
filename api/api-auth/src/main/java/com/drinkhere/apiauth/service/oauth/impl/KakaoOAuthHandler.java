@@ -38,6 +38,6 @@ public class KakaoOAuthHandler implements AuthHandler {
 
     private KakaoUserInfo getKaKaoUserInfo(String accessToken) {
         // REST API Key만으로 AccessToken을 통해 사용자 정보 가져오기
-        return kakaoClient.getKakaoUserInfo(KAKAO_AUTHORIZATION_BEARER + accessToken);
+        return kakaoClient.getKakaoUserInfo(accessToken);
     }
 }

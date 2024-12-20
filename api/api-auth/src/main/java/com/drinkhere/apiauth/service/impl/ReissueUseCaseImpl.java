@@ -6,7 +6,6 @@ import com.drinkhere.common.annotation.ApplicationService;
 import com.drinkhere.domainrds.auth.consts.AuthConsts;
 import com.drinkhere.domainrds.auth.dto.TokenReissueResponse;
 import com.drinkhere.domainrds.auth.jwt.JWTProvider;
-import com.drinkhere.domainrds.auth.jwt.PrivateClaims;
 import com.drinkhere.domainrds.auth.jwt.TokenType;
 import com.drinkhere.domainrds.auth.service.TokenDeleteService;
 import com.drinkhere.domainrds.auth.service.TokenLockService;
@@ -29,21 +28,21 @@ public class ReissueUseCaseImpl implements ReissueUseCase {
     public TokenReissueResponse reissue(String refreshTokenHeader) {
         final String refreshToken = TokenExtractUtils.extractToken(refreshTokenHeader);
         jwtProvider.validateToken(refreshToken, TokenType.REFRESH_TOKEN);
-        final PrivateClaims.UserClaims userClaims = jwtProvider.extractUserClaimsFromToken(refreshToken, TokenType.REFRESH_TOKEN);
-        return reissueToken(refreshToken, userClaims);
+        final String sub = jwtProvider.extractSubFromToken(refreshToken, TokenType.REFRESH_TOKEN);
+        return reissueToken(refreshToken, sub);
     }
 
-    private TokenReissueResponse reissueToken(final String refreshToken, final PrivateClaims.UserClaims userClaims) {
-        final String lockKey = userClaims.toString();
+    private TokenReissueResponse reissueToken(final String refreshToken, final String sub) {
+        final String lockKey = sub; // sub를 락 키로 사용
         try {
             tokenLockService.lockToken(lockKey); // Redis를 사용한 락
             if (jwtProvider.existsCachedRefreshToken(refreshToken)) {
                 return generateToken(jwtProvider::getCachedToken, refreshToken);
             }
-            tokenValidateService.validateIsExistToken(refreshToken, TokenType.REFRESH_TOKEN, userClaims.getUserId());
-            tokenDeleteService.deleteTokenByValue(refreshToken, userClaims.getUserId());
+            tokenValidateService.validateIsExistToken(refreshToken, TokenType.REFRESH_TOKEN, sub);
+            tokenDeleteService.deleteTokenByValue(refreshToken, sub);
 
-            return generateAndSaveToken(jwtProvider::reIssueToken, refreshToken, userClaims.getUserId());
+            return generateAndSaveToken(jwtProvider::reIssueToken, refreshToken, sub);
         } finally {
             tokenLockService.releaseLockToken(lockKey); // Redis 락 해제
         }
@@ -56,10 +55,9 @@ public class ReissueUseCaseImpl implements ReissueUseCase {
         return new TokenReissueResponse(generatedAccessToken, generatedRefreshToken);
     }
 
-    private TokenReissueResponse generateAndSaveToken(final Function<String, JWTProvider.Token> tokenGenerator, final String refreshToken, final Long userId) {
+    private TokenReissueResponse generateAndSaveToken(final Function<String, JWTProvider.Token> tokenGenerator, final String refreshToken, final String sub) {
         final JWTProvider.Token token = tokenGenerator.apply(refreshToken);
-        tokenSaveService.saveToken(token.refreshToken(), TokenType.REFRESH_TOKEN, userId);
+        tokenSaveService.saveToken(token.refreshToken(), TokenType.REFRESH_TOKEN, sub);
         return generateToken(inputRefreshToken -> token, refreshToken);
     }
-
 }

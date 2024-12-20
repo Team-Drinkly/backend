@@ -23,19 +23,35 @@ public class LogoutUseCaseImpl implements LogoutUseCase {
     public void logoutAccessUser(String refreshTokenHeader) {
         final String refreshToken = TokenExtractUtils.extractToken(refreshTokenHeader);
 
-        // JWTProvider를 통해 사용자 ID 추출
-        final Long userId = jwtProvider.extractUserIdFromToken(refreshToken);
+        try {
+            // 사용자 ID 추출
+            final Long userId = 0L;
 
-        // Redis Key 생성
-        final String key = String.format("TOKEN:%d:%s", userId, TokenType.REFRESH_TOKEN.name());
+            // Redis Key 생성
+            final String redisKey = generateRedisKey(userId);
 
-        // Redis에서 해당 토큰 삭제
-        Object storedValue = redisUtil.get(key);
-        if (refreshToken.equals(storedValue)) {
-            tokenDeleteService.deleteToken(key);
-            log.info("User logged out. Token deleted from Redis: {}", key);
-        } else {
-            log.warn("Token not found in Redis or mismatch: {}", key);
+            // Redis에서 토큰 조회
+            Object storedValue = redisUtil.get(redisKey);
+            if (refreshToken.equals(storedValue)) {
+                // Redis에서 토큰 삭제
+                tokenDeleteService.deleteToken(redisKey);
+                log.info("Logout successful. Token removed from Redis for user ID {}: {}", userId, redisKey);
+            } else {
+                log.warn("Token mismatch or not found in Redis for user ID {}: {}", userId, redisKey);
+            }
+        } catch (Exception e) {
+            log.error("Logout failed due to an unexpected error: {}", e.getMessage(), e);
+            throw new IllegalStateException("Logout process failed. Please try again later.", e);
         }
+    }
+
+    /**
+     * Redis Key 생성 유틸 메서드.
+     *
+     * @param userId 사용자 ID
+     * @return Redis Key
+     */
+    private String generateRedisKey(Long userId) {
+        return String.format("TOKEN:%d:%s", userId, TokenType.REFRESH_TOKEN.name());
     }
 }
