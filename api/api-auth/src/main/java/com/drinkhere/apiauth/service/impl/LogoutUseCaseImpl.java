@@ -9,12 +9,10 @@ import com.drinkhere.domainrds.auth.service.TokenDeleteService;
 import com.drinkhere.infraredis.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @ApplicationService
 @RequiredArgsConstructor
-@Transactional
 public class LogoutUseCaseImpl implements LogoutUseCase {
 
     private final TokenDeleteService tokenDeleteService;

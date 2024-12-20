@@ -13,11 +13,9 @@ import com.drinkhere.domainrds.auth.service.TokenLockService;
 import com.drinkhere.domainrds.auth.service.TokenSaveService;
 import com.drinkhere.domainrds.auth.service.TokenValidateService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Function;
 
-@Transactional
 @RequiredArgsConstructor
 @ApplicationService
 public class ReissueUseCaseImpl implements ReissueUseCase {
