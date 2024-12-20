@@ -8,5 +8,5 @@ public interface TokenDeleteService {
 
     void deleteAllTokens(final List<String> keys);
 
-    void deleteTokenByValue(final String value, final Long userId);
+    void deleteTokenByValue(final String value, final String sub);
 }

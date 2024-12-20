@@ -16,16 +16,14 @@ public class OAuth {
     private Long authId;
     @Enumerated(value = EnumType.STRING)
     private Provider provider;
-    private String sub; // 소셜로그인 유저의 고유 식별자
-    private Long userId;
+    private String sub;
 
-    private OAuth(Provider provider, String sub, Long userId) {
+    private OAuth(Provider provider, String sub) {
         this.provider = provider;
         this.sub = sub;
-        this.userId = userId;
     }
 
-    public static OAuth of(Provider provider, String sub, Long userId) {
-        return new OAuth(provider, sub, userId);
+    public static OAuth of(Provider provider, String sub) {
+        return new OAuth(provider, sub);
     }
 }

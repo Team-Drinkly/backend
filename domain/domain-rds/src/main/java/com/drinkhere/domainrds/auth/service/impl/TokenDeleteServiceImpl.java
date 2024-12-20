@@ -24,9 +24,9 @@ public class TokenDeleteServiceImpl implements TokenDeleteService {
     }
 
     @Override
-    public void deleteTokenByValue(final String value, final Long userId) {
-        // Redis key 생성 (예: "TOKEN:userId:REFRESH_TOKEN")
-        String key = String.format("TOKEN:%d:%s", userId, "REFRESH_TOKEN");
+    public void deleteTokenByValue(final String value, final String sub) {
+        // Redis key 생성 (예: "TOKEN:sub:REFRESH_TOKEN")
+        String key = String.format("TOKEN:%s:%s", sub, "REFRESH_TOKEN");
 
         // 값이 일치하면 삭제
         Object storedValue = redisUtil.get(key);

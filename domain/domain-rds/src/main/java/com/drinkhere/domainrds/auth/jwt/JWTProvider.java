@@ -15,45 +15,62 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
- * jjwt 깃허브 : https://github.com/jwtk/jjwt
- */
 @Component
 @RequiredArgsConstructor
 public class JWTProvider {
     private final JWTProperties jwtProperties;
     private final ValueOperator<String, Token> tokenCacheOperator;
 
-    public String generateAccessToken(final PrivateClaims.UserClaims userClaims) {
-        return generateToken(userClaims.createPrivateClaims(TokenType.ACCESS_TOKEN), jwtProperties.getAccessTokenExpirationTime());
+    public String generateAccessToken(final String sub) {
+        return generateToken(PrivateClaims.of(sub, TokenType.ACCESS_TOKEN), jwtProperties.getAccessTokenExpirationTime());
     }
 
-    public String generateRefreshToken(final PrivateClaims.UserClaims userClaims) {
-        return generateToken(userClaims.createPrivateClaims(TokenType.REFRESH_TOKEN), jwtProperties.getRefreshTokenExpirationTime());
+    public String generateRefreshToken(final String sub) {
+        return generateToken(PrivateClaims.of(sub, TokenType.REFRESH_TOKEN), jwtProperties.getRefreshTokenExpirationTime());
     }
 
-    public Token generateToken(final PrivateClaims.UserClaims userClaims) {
-        final String accessToken = generateAccessToken(userClaims);
-        final String refreshToken = generateRefreshToken(userClaims);
+    public Token generateToken(final String sub) {
+        // PrivateClaims를 사용하여 AccessToken 및 RefreshToken 생성
+        final PrivateClaims privateClaims = PrivateClaims.of(sub, TokenType.ACCESS_TOKEN);
+        final String accessToken = generateToken(privateClaims, jwtProperties.getAccessTokenExpirationTime());
+
+        final PrivateClaims refreshClaims = PrivateClaims.of(sub, TokenType.REFRESH_TOKEN);
+        final String refreshToken = generateToken(refreshClaims, jwtProperties.getRefreshTokenExpirationTime());
+
         return new Token(accessToken, refreshToken);
     }
 
     public Token reIssueToken(final String refreshToken) {
         validateToken(refreshToken, TokenType.REFRESH_TOKEN);
-        final PrivateClaims.UserClaims userClaims = extractUserClaimsFromToken(refreshToken, TokenType.REFRESH_TOKEN);
-        final String newAccessToken = generateAccessToken(userClaims);
-        final String newRefreshToken = generateRefreshToken(userClaims);
+        final String sub = extractSubFromToken(refreshToken, TokenType.REFRESH_TOKEN);
+        final String newAccessToken = generateAccessToken(sub);
+        final String newRefreshToken = generateRefreshToken(sub);
 
         tokenCacheOperator.setWithExpire(refreshToken, new Token(newAccessToken, newRefreshToken), 1, TimeUnit.MINUTES);
 
         return new Token(newAccessToken, newRefreshToken);
     }
 
-    public PrivateClaims.UserClaims extractUserClaimsFromToken(String token, TokenType tokenType) {
-        return initializeJwtParser(tokenType)
-                .parseSignedClaims(token)
-                .getPayload()
-                .get(JWTConsts.USER_CLAIMS, PrivateClaims.UserClaims.class);
+    public String extractSubFromToken(String token, TokenType tokenType) {
+        try {
+            return initializeJwtParser(tokenType)
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get(JWTConsts.USER_CLAIMS, String.class);
+        } catch (IllegalArgumentException | JwtException e) {
+            throw new InvalidTokenException(AuthErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public Long extractUserIdFromToken(String token) {
+        try {
+            String sub = extractSubFromToken(token, TokenType.ACCESS_TOKEN);
+
+            // Convert sub to Long and return
+            return Long.parseLong(sub);
+        } catch (NumberFormatException e) {
+            throw new InvalidTokenException(AuthErrorCode.INVALID_TOKEN);
+        }
     }
 
     public boolean existsCachedRefreshToken(String refreshToken) {
@@ -75,17 +92,10 @@ public class JWTProvider {
                 .compact();
     }
 
-    /**
-     * @return 서명에 사용할 Key 반환
-     */
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecret()));
     }
 
-    /**
-     * @throws InvalidTokenException 잘못된 토큰이 요청되었을 때 반환(서명 오류, 잘못된 토큰 형식, 잘못된 토큰 발급자, null이거나 공백인 경우)
-     * @throws ExpiredTokenException 만료된 토큰이 요청되었을 때 반환
-     */
     public void validateToken(final String token, final TokenType tokenType) {
         final JwtParser jwtParser = initializeJwtParser(tokenType);
         try {
@@ -95,11 +105,6 @@ public class JWTProvider {
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN);
         }
-    }
-
-    public Long extractUserIdFromToken(String token) {
-        final PrivateClaims.UserClaims userClaims = extractUserClaimsFromToken(token, TokenType.REFRESH_TOKEN);
-        return userClaims.getUserId();
     }
 
     private JwtParser initializeJwtParser(final TokenType tokenType) {
@@ -113,5 +118,5 @@ public class JWTProvider {
 
     public record Token(String accessToken, String refreshToken) {
     }
-
 }
+

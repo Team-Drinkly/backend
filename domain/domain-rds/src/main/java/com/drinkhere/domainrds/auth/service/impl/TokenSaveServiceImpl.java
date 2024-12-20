@@ -19,9 +19,9 @@ public class TokenSaveServiceImpl implements TokenSaveService {
     private Long tokenExpirationTime; // 토큰 만료 시간 (초 단위)
 
     @Override
-    public void saveToken(String token, TokenType tokenType, Long userId) {
-        // Redis에 저장할 key 생성 (예: "TOKEN:userId:tokenType")
-        String key = String.format("TOKEN:%d:%s", userId, tokenType.name());
+    public void saveToken(String token, TokenType tokenType, String sub) {
+        // Redis에 저장할 key 생성 (예: "TOKEN:sub:tokenType")
+        String key = String.format("TOKEN:%s:%s", sub, tokenType.name());
 
         // Redis에 토큰 저장
         redisUtil.saveAsValue(key, token, tokenExpirationTime, TimeUnit.SECONDS);
