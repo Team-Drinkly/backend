@@ -1,7 +1,7 @@
 package com.drinkhere.apiauth.service.oauth.impl;
 
 import com.drinkhere.apiauth.service.oauth.AuthHandler;
-import com.drinkhere.apiauth.service.oauth.feign.AppleFeignClient;
+import com.drinkhere.apiauth.service.oauth.feign.AppleClient;
 import com.drinkhere.apiauth.service.oauth.feign.response.Keys;
 import com.drinkhere.common.exception.oauth.AuthErrorCode;
 import com.drinkhere.common.exception.token.InvalidTokenException;
@@ -35,7 +35,7 @@ public class AppleOAuthHandler implements AuthHandler {
     private static final String APPLE_USER_INFO = "email";
     private static final String APPLE_ISS = "https://appleid.apple.com";
 
-    private final AppleFeignClient appleFeignClient;
+    private final AppleClient appleClient;
     @Value("${app-id.apple}")
     private String apple_aud;
 
@@ -60,7 +60,7 @@ public class AppleOAuthHandler implements AuthHandler {
     private Jws<Claims> sigVerificationAndGetJws(String unverifiedToken) {
         String kid = getKidFromUnsignedTokenHeader(unverifiedToken);
 
-        Keys keys = appleFeignClient.getKeys();
+        Keys keys = appleClient.getKeys();
         Keys.PubKey pubKey = keys.getKeys().stream()
                 .filter((key) -> key.getKid().equals(kid))
                 .findAny()

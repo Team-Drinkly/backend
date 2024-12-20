@@ -1,7 +1,7 @@
 package com.drinkhere.apiauth.service.oauth.impl;
 
 import com.drinkhere.apiauth.service.oauth.AuthHandler;
-import com.drinkhere.apiauth.service.oauth.feign.KakaoOAuthFeignClient;
+import com.drinkhere.apiauth.service.oauth.feign.KakaoClient;
 import com.drinkhere.apiauth.service.oauth.feign.response.KakaoUserInfo;
 import com.drinkhere.common.exception.oauth.AuthErrorCode;
 import com.drinkhere.common.exception.token.InvalidTokenException;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KakaoOAuthHandler implements AuthHandler {
     private static final Provider OAUTH_TYPE = Provider.KAKAO;
-    private final KakaoOAuthFeignClient kakaoOAuthFeignClient;
+    private final KakaoClient kakaoClient;
     private static final String KAKAO_AUTHORIZATION_BEARER = "Bearer ";
 
     @Override
@@ -38,6 +38,6 @@ public class KakaoOAuthHandler implements AuthHandler {
 
     private KakaoUserInfo getKaKaoUserInfo(String accessToken) {
         // REST API Key만으로 AccessToken을 통해 사용자 정보 가져오기
-        return kakaoOAuthFeignClient.getKakaoUserInfo(KAKAO_AUTHORIZATION_BEARER + accessToken);
+        return kakaoClient.getKakaoUserInfo(KAKAO_AUTHORIZATION_BEARER + accessToken);
     }
 }
