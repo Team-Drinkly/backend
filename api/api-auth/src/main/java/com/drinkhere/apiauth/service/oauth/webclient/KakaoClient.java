@@ -2,6 +2,7 @@ package com.drinkhere.apiauth.service.oauth.webclient;
 
 import com.drinkhere.apiauth.service.oauth.webclient.response.KakaoUserInfo;
 import com.drinkhere.apiauth.service.oauth.webclient.response.TokenInfo;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -10,7 +11,7 @@ public class KakaoClient {
 
     private final WebClient webClient;
 
-    public KakaoClient(WebClient kakaoWebClient) {
+    public KakaoClient(@Qualifier("kakaoWebClient") WebClient kakaoWebClient) {
         this.webClient = kakaoWebClient;
     }
 
