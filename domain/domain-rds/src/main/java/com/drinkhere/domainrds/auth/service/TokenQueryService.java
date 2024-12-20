@@ -1,9 +1,8 @@
 package com.drinkhere.domainrds.auth.service;
 
-import com.pawith.authdomain.entity.Token;
-import com.pawith.authdomain.jwt.TokenType;
+import com.drinkhere.domainrds.auth.jwt.TokenType;
 
 public interface TokenQueryService {
 
-    Token findTokenByValue(final String value, final TokenType tokenType);
+    String findTokenByValue(final String value, final TokenType tokenType);
 }
