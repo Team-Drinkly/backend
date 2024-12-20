@@ -1,4 +1,4 @@
-package com.drinkhere.apiauth.service.oauth.feign.response;
+package com.drinkhere.apiauth.service.oauth.webclient.response;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AccessLevel;

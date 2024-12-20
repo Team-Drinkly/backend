@@ -1,7 +1,7 @@
-package com.drinkhere.apiauth.service.oauth.feign;
+package com.drinkhere.apiauth.service.oauth.webclient;
 
-import com.drinkhere.apiauth.service.oauth.feign.response.KakaoUserInfo;
-import com.drinkhere.apiauth.service.oauth.feign.response.TokenInfo;
+import com.drinkhere.apiauth.service.oauth.webclient.response.KakaoUserInfo;
+import com.drinkhere.apiauth.service.oauth.webclient.response.TokenInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 

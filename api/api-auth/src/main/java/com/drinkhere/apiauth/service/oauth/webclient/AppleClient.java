@@ -1,6 +1,6 @@
-package com.drinkhere.apiauth.service.oauth.feign;
+package com.drinkhere.apiauth.service.oauth.webclient;
 
-import com.drinkhere.apiauth.service.oauth.feign.response.Keys;
+import com.drinkhere.apiauth.service.oauth.webclient.response.Keys;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

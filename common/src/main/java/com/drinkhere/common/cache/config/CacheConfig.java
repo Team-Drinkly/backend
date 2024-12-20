@@ -9,6 +9,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     @Bean
-    public CacheTemplate<?,?> cacheTemplate() {
+    public CacheTemplate<?, ?> cacheTemplate() {
         return new DefaultCacheTemplate<>();
     }
 
@@ -27,11 +28,12 @@ public class CacheConfig {
     }
 
     @Bean
-    public ValueOperator<?,?> valueOperator() {
+    public ValueOperator<?, ?> valueOperator() {
         return cacheTemplate().opsForValue();
     }
 
     @Bean
+    @Primary
     public CacheManager cacheManager() {
         final DefaultCacheManger defaultCacheManger = new DefaultCacheManger();
         defaultCacheManger.setupTimeToLive(10, TimeUnit.SECONDS);
