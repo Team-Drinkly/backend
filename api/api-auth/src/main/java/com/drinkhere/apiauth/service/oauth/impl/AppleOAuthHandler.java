@@ -1,8 +1,8 @@
 package com.drinkhere.apiauth.service.oauth.impl;
 
 import com.drinkhere.apiauth.service.oauth.AuthHandler;
-import com.drinkhere.apiauth.service.oauth.feign.AppleClient;
-import com.drinkhere.apiauth.service.oauth.feign.response.Keys;
+import com.drinkhere.apiauth.service.oauth.webclient.AppleClient;
+import com.drinkhere.apiauth.service.oauth.webclient.response.Keys;
 import com.drinkhere.common.exception.oauth.AuthErrorCode;
 import com.drinkhere.common.exception.token.InvalidTokenException;
 import com.drinkhere.domainrds.auth.dto.OAuthRequest;

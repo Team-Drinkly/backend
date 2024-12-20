@@ -1,5 +1,7 @@
 package com.drinkhere.apiauth.security.filter;
 
+import com.drinkhere.common.exception.CustomException;
+import com.drinkhere.common.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,12 +21,12 @@ public class JWTEntryPoint extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
             filterChain.doFilter(request, response);
-        } catch (BusinessException exception){
+        } catch (CustomException exception){
             handleException(response, exception);
         }
     }
 
-    private void handleException(HttpServletResponse response, BusinessException exception) throws IOException {
+    private void handleException(HttpServletResponse response, CustomException exception) throws IOException {
         ErrorResponse errorResponse = ErrorResponse.from(exception);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");

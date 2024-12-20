@@ -1,8 +1,8 @@
 package com.drinkhere.apiauth.service.oauth.impl;
 
 import com.drinkhere.apiauth.service.oauth.AuthHandler;
-import com.drinkhere.apiauth.service.oauth.feign.KakaoClient;
-import com.drinkhere.apiauth.service.oauth.feign.response.KakaoUserInfo;
+import com.drinkhere.apiauth.service.oauth.webclient.KakaoClient;
+import com.drinkhere.apiauth.service.oauth.webclient.response.KakaoUserInfo;
 import com.drinkhere.common.exception.oauth.AuthErrorCode;
 import com.drinkhere.common.exception.token.InvalidTokenException;
 import com.drinkhere.domainrds.auth.dto.OAuthRequest;

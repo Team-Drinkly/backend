@@ -1,4 +1,4 @@
-package com.drinkhere.apiauth.service.oauth.feign.config;
+package com.drinkhere.apiauth.service.oauth.webclient.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
