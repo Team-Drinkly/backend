@@ -7,4 +7,8 @@ jar {
 
 dependencies {
     implementation project(':api:api-health-check')
+    implementation project(':api:api-auth')
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
