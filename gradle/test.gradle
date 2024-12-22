@@ -1,0 +1,13 @@
+subprojects {
+    if (plugins.hasPlugin("java-test-fixtures")) { // java-test-fixtures 플러그인 적용 확인
+        dependencies {
+            // Fixture testing tool
+            testFixturesImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.0")
+        }
+    }
+
+    dependencies {
+        // 공통 의존성
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
