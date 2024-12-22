@@ -19,7 +19,8 @@ spring:
       - application-redis-local.yml
       - application-s3-local.yml
       - application-hc-local.yml
-      - application-auth.yml
+      - application-nice-local.yml
+#      - application-auth-local.yml
 
 logging:
   level:
@@ -38,7 +39,8 @@ spring:
       - application-redis-prod.yml
       - application-s3-prod.yml
       - application-hc-prod.yml
-      - application-auth.yml
+      - application-auth-prod.yml
+      - application-nice-prod.yml
 
 logging:
   level:

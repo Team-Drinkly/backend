@@ -17,6 +17,10 @@ public class RedisUtil {
         redisTemplate.opsForValue().set(key, val, time, timeUnit);
     }
 
+    public void saveWithoutExpiration(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
     public boolean saveAsValueIfAbsent(String key, Object value, long time, TimeUnit timeUnit) {
         Boolean result = redisTemplate.opsForValue().setIfAbsent(key, value, time, timeUnit);
         return Boolean.TRUE.equals(result);
