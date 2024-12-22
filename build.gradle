@@ -1,7 +1,9 @@
 plugins {
 	id 'java'
+	id "java-test-fixtures"
 	id 'org.springframework.boot' version '3.2.10'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 bootJar { enabled = false }
@@ -26,6 +28,7 @@ allprojects { // 루트 프로젝트 + 서브 프로젝트
 subprojects { // 서브 프로젝트
 	apply plugin: "java"
 	apply plugin: 'java-library'
+	apply plugin: 'java-test-fixtures'
 	apply plugin: "io.spring.dependency-management"
 	apply plugin: "org.springframework.boot"
 
@@ -80,3 +83,6 @@ task copyPrivate(type: Copy) {
 		into 'infra/infra-s3/src/main/resources'
 	}
 }
+
+apply from: 'gradle/test.gradle'
+apply from: 'gradle/restdocs.gradle'

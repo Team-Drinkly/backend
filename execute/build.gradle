@@ -11,4 +11,6 @@ dependencies {
 
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    testImplementation testFixtures(project(":common"))
 }

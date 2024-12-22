@@ -4,6 +4,14 @@ jar {enabled = true}
 dependencies {
 
     implementation 'net.jodah:expiringmap:0.5.10'
+
+    // Test Fixtures 전용 의존성
+    testFixturesImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.0'
+    testFixturesImplementation 'org.springframework.security:spring-security-test'
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'org.springframework.boot:spring-boot-starter' // Spring Boot 기본 의존성
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test 의존성
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}
