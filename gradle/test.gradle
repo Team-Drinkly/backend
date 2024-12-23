@@ -1,0 +1,27 @@
+subprojects {
+    // Test Fixtures 의존성을 추가할 경우 java-test-fixtures 플러그인 활성화 여부 확인
+    if (plugins.hasPlugin("java-test-fixtures")) {
+        dependencies {
+            testFixturesImplementation "com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.0"
+            testFixturesImplementation "org.springframework.boot:spring-boot-starter-test"
+            testFixturesImplementation "org.springframework.restdocs:spring-restdocs-mockmvc"
+        }
+    }
+
+    // 공통 의존성 추가
+    dependencies {
+        // 테스트 관련 의존성
+        testImplementation "org.springframework.boot:spring-boot-starter-test" // JUnit 5 포함
+        testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc" // REST Docs
+        testImplementation "org.junit.jupiter:junit-jupiter:5.10.0" // JUnit 5 확장
+
+        // Jackson 의존성 (ObjectMapper 사용)
+        implementation "org.springframework.boot:spring-boot-starter-web" // Spring Boot Web Starter
+        implementation "com.fasterxml.jackson.core:jackson-databind" // Jackson 코어 라이브러리
+    }
+
+    // JUnit 5 활성화
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
+}

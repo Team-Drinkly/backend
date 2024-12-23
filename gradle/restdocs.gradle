@@ -1,0 +1,44 @@
+configurations {
+    asciidoctorExtensions
+}
+
+dependencies {
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+
+tasks.register("copySnippets", Copy) {
+    if (project.name != 'execute') {
+        dependsOn tasks.named("test")
+        from snippetsDir
+        into rootProject.file("execute/build/generated-snippets")
+    }
+}
+
+tasks.named("build") {
+    dependsOn tasks.named("copySnippets")
+}
+
+if (project.name == 'execute') {
+    tasks.named("asciidoctor") {
+        configurations 'asciidoctorExtensions'
+        inputs.dir snippetsDir
+        baseDirFollowsSourceFile()
+        outputDir = file('build/docs/asciidoc')
+    }
+
+    tasks.register("generateRestDocs", Copy) {
+        dependsOn tasks.named("asciidoctor")
+        from file('build/docs/asciidoc')
+        into file("src/main/resources/static/docs")
+    }
+}

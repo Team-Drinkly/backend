@@ -2,12 +2,14 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.10'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 bootJar { enabled = false }
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
 }
 
 allprojects { // 루트 프로젝트 + 서브 프로젝트
@@ -26,6 +28,7 @@ allprojects { // 루트 프로젝트 + 서브 프로젝트
 subprojects { // 서브 프로젝트
 	apply plugin: "java"
 	apply plugin: 'java-library'
+	apply plugin: 'java-test-fixtures'
 	apply plugin: "io.spring.dependency-management"
 	apply plugin: "org.springframework.boot"
 
@@ -40,16 +43,20 @@ subprojects { // 서브 프로젝트
 		compileOnly 'org.projectlombok:lombok'
 		annotationProcessor 'org.projectlombok:lombok'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
 	}
 
-	test {
-		useJUnitPlatform()
-		testLogging {
-			showStandardStreams = true
-			showCauses = true
-			showExceptions = true
-			showStackTraces = true
-			exceptionFormat = 'full'
+	tasks {
+		test {
+			useJUnitPlatform()
+		}
+	}
+
+	if (plugins.hasPlugin("java-test-fixtures")) {
+		dependencies {
+			testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+			testFixturesImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+			testFixturesImplementation 'org.springframework.security:spring-security-test'
 		}
 	}
 }
@@ -61,34 +68,32 @@ configure(subprojects.findAll { it.name != 'common' && it.name != 'execute' }) {
 }
 
 // 서브모듈 설정파일 복사
-task copyPrivate(type: Copy) {
-	copy {
-		from './backend-submodule'
-		include "application-rds-prod.yml"
-		into 'domain/domain-rds/src/main/resources'
-	}
+apply from: 'gradle/test.gradle'
+apply from: 'gradle/restdocs.gradle'
+apply from: 'gradle/submodule.gradle'
 
-	copy {
-		from './backend-submodule'
-		include "application-redis-prod.yml"
-		into 'infra/infra-redis/src/main/resources'
-	}
 
-	copy {
-		from './backend-submodule'
-		include "application-s3-prod.yml"
-		into 'infra/infra-s3/src/main/resources'
-	}
+// 루트 모듈에서만 asciidoctor 태스크 설정
+tasks.named('asciidoctor') {
+	configurations 'asciidoctorExtensions'
+	baseDirFollowsSourceFile()
+	inputs.dir file('execute/src/main/docs/asciidoc') // AsciiDoc 파일 경로
+	outputs.dir file('build/docs/asciidoc') // 출력 경로
 
-	copy {
-		from './backend-submodule'
-		include "application-nice-prod.yml"
-		into 'client/client-nice/src/main/resources'
-	}
 
-	copy {
-		from './backend-submodule'
-		include "application-auth-prod.yml"
-		into 'api/api-auth/src/main/resources'
+	doFirst {
+		// 기존 docs 폴더를 삭제하여 새로운 결과물이 생성되도록 함
+		delete file('src/main/resources/docs')
 	}
+}
+
+
+task copyDocument(type: Copy) {
+	from file("build/docs/asciidoc") // AsciiDoc 결과물 위치
+	into file("src/main/resources/docs") // 최종 결과물이 복사될 경로
+}
+
+
+build {
+	dependsOn copyDocument
 }
