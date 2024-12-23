@@ -1,7 +1,6 @@
 package com.drinkhere.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pawith.TestSpringBootApplicationConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +31,16 @@ public class BaseRestDocsTest {
 
     @BeforeEach
     void setUp(final WebApplicationContext applicationContext,
-               final RestDocumentationContextProvider provider){
+               final RestDocumentationContextProvider provider) {
         this.mvc = MockMvcBuilders.webAppContextSetup(applicationContext)
-            .apply(MockMvcRestDocumentation.documentationConfiguration(provider).uris()
-                .withScheme("https")
-                .withHost("dev.pawith.com")
-                .withPort(443))
-            .alwaysDo(MockMvcResultHandlers.print())
-            .alwaysDo(resultHandler)
-            .addFilters(new CharacterEncodingFilter("UTF-8", true))
-            .build();
+                .apply(MockMvcRestDocumentation.documentationConfiguration(provider).uris()
+                        .withScheme("https")
+                        .withHost("drinkhere.store")
+                        .withPort(443))
+                .alwaysDo(MockMvcResultHandlers.print())
+                .alwaysDo(resultHandler)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .build();
     }
 
 }

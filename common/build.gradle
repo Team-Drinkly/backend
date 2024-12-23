@@ -1,17 +1,21 @@
-bootJar {enabled = false}
-jar {enabled = true}
-
-dependencies {
-
-    implementation 'net.jodah:expiringmap:0.5.10'
-
-    // Test Fixtures 전용 의존성
-    testFixturesImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.0'
-    testFixturesImplementation 'org.springframework.security:spring-security-test'
-    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-web'
-
-    implementation 'org.springframework.boot:spring-boot-starter' // Spring Boot 기본 의존성
-    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test 의존성
+plugins {
+    id 'java'
+    id 'java-test-fixtures' // Test Fixtures 활성화
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+bootJar { enabled = false } // Spring Boot JAR 비활성화 (라이브러리 모듈)
+jar { enabled = true }
+
+dependencies {
+    // 일반 의존성
+    implementation 'net.jodah:expiringmap:0.5.10'
+
+    // Test Fixtures 의존성
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit 5 및 Spring Boot Test
+    testFixturesImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc' // REST Docs
+    testFixturesImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security Core
+    testFixturesImplementation 'com.fasterxml.jackson.core:jackson-databind' // Jackson (ObjectMapper)
+    testFixturesImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0' // Servlet API (필터 관련)
+    testFixturesImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0' // JUnit 5 확장
+}

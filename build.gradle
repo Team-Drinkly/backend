@@ -1,37 +1,40 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+
 plugins {
 	id 'java'
-	id "java-test-fixtures"
 	id 'org.springframework.boot' version '3.2.10'
 	id 'io.spring.dependency-management' version '1.1.6'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
-bootJar { enabled = false }
+bootJar {
+	enabled = false
+}
 
 repositories {
 	mavenCentral()
 }
 
-allprojects { // 루트 프로젝트 + 서브 프로젝트
+allprojects {
 	group = 'com.drinkhere'
 	version = '0.0.1-SNAPSHOT'
+
 	java {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(21)
 		}
 	}
+
 	repositories {
 		mavenCentral()
 	}
 }
 
-subprojects { // 서브 프로젝트
-	apply plugin: "java"
+subprojects {
+	apply plugin: 'java'
 	apply plugin: 'java-library'
 	apply plugin: 'java-test-fixtures'
-	apply plugin: "io.spring.dependency-management"
-	apply plugin: "org.springframework.boot"
-
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.springframework.boot'
 
 	configurations {
 		compileOnly {
@@ -42,17 +45,21 @@ subprojects { // 서브 프로젝트
 	dependencies {
 		compileOnly 'org.projectlombok:lombok'
 		annotationProcessor 'org.projectlombok:lombok'
+
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 	}
 
-	test {
-		useJUnitPlatform()
-		testLogging {
-			showStandardStreams = true
-			showCauses = true
-			showExceptions = true
-			showStackTraces = true
-			exceptionFormat = 'full'
+	tasks {
+		test {
+			useJUnitPlatform()
+		}
+	}
+
+	if (plugins.hasPlugin("java-test-fixtures")) {
+		dependencies {
+			testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
+			testFixturesImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+			testFixturesImplementation 'org.springframework.security:spring-security-test'
 		}
 	}
 }
@@ -63,26 +70,48 @@ configure(subprojects.findAll { it.name != 'common' && it.name != 'execute' }) {
 	}
 }
 
-// 서브모듈 설정파일 복사
-task copyPrivate(type: Copy) {
-	copy {
-		from './backend-submodule'
-		include "application-rds-prod.yml"
-		into 'domain/domain-rds/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-redis-prod.yml"
-		into 'infra/infra-redis/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-s3-prod.yml"
-		into 'infra/infra-s3/src/main/resources'
+task copyPrivate {
+	doLast {
+		copy {
+			from './backend-submodule'
+			include "application-rds-prod.yml"
+			into 'domain/domain-rds/src/main/resources'
+		}
+		copy {
+			from './backend-submodule'
+			include "application-redis-prod.yml"
+			into 'infra/infra-redis/src/main/resources'
+		}
+		copy {
+			from './backend-submodule'
+			include "application-s3-prod.yml"
+			into 'infra/infra-s3/src/main/resources'
+		}
 	}
 }
 
 apply from: 'gradle/test.gradle'
 apply from: 'gradle/restdocs.gradle'
+
+// 루트 모듈에서만 asciidoctor 태스크 설정
+tasks.register('asciidoctor', AsciidoctorTask) {
+	configurations 'asciidoctorExtensions'
+	baseDirFollowsSourceFile()
+	inputs.dir file('build/generated-snippets')
+	outputDir = file('build/docs/asciidoc')
+}
+
+tasks.named('asciidoctor') {
+	doFirst {
+		delete file('src/main/resources/docs')
+	}
+}
+
+task copyDocument(type: Copy) {
+	from file("build/docs/asciidoc")
+	into file("src/main/resources/docs")
+}
+
+build {
+	dependsOn copyDocument
+}
