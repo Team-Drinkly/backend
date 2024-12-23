@@ -19,7 +19,9 @@ public class IgnoredPathConsts {
         "/reissue",HttpMethod.POST,
         "/actuator/**", HttpMethod.GET,
         "/user/landing", HttpMethod.POST,
-        "api/v1/public/*", HttpMethod.GET
+        "/api/v1/nice/**" +
+                "" +
+                "", HttpMethod.GET
     );
 
 }

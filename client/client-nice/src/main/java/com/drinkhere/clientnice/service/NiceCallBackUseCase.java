@@ -42,7 +42,8 @@ public class NiceCallBackUseCase {
     private static final String SYMMETRIC_ENCRYPTION_ALGORITHM_AES = "AES";
     private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 
-    public void processCallback(Long memberId, String encData) throws UnsupportedEncodingException {
+    public void processCallback(Long memberId, String encData)
+    {
         // 대칭키 조회
         NiceCryptoData niceCryptoData = getCryptoDataFromRedisAndValidate();
 
@@ -56,9 +57,11 @@ public class NiceCallBackUseCase {
         validateAdult(niceDecryptedData.birthDate());
         checkDuplicateAccountByDI(niceDecryptedData.di());
 
+        String decodedName = decodingName(niceDecryptedData.utf8Name());
+
         // 복호화 결과 저장
         Member member = Member.builder()
-                .name(URLDecoder.decode(niceDecryptedData.utf8Name(), "UTF-8"))
+                .name(decodedName)
                 .birthDate(niceDecryptedData.birthDate())
                 .gender(Gender.fromValue(Integer.parseInt(niceDecryptedData.gender()))) // Gender Enum 변환
                 .nationalInfo(NationalInfo.fromValue(Integer.parseInt(niceDecryptedData.nationalInfo()))) // NationalInfo Enum 변환
@@ -148,6 +151,14 @@ public class NiceCallBackUseCase {
 
         if (isDuplicate) {
             throw new NiceException(DUPLICATE_ACCOUNT);
+        }
+    }
+    
+    private String decodingName(String encodedName) {
+        try {
+            return URLDecoder.decode(encodedName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NiceException(NAME_DECODING_FAILED);
         }
     }
 }

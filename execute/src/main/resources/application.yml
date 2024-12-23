@@ -20,7 +20,7 @@ spring:
       - application-s3-local.yml
       - application-hc-local.yml
       - application-nice-local.yml
-#      - application-auth-local.yml
+      - application-auth-local.yml
 
 logging:
   level:
