@@ -2,7 +2,7 @@ package com.drinkhere.clientnice.presentation;
 
 import com.drinkhere.clientnice.dto.response.CreateNiceApiRequestDataDto;
 import com.drinkhere.clientnice.service.NiceCallBackUseCase;
-import com.drinkhere.clientnice.service.initializeNiceUseCase;
+import com.drinkhere.clientnice.service.InitializeNiceUseCase;
 import com.drinkhere.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import static com.drinkhere.clientnice.response.NiceSuccessStatus.PROCESS_CALLBA
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/nice")
 public class NiceController {
-    private final initializeNiceUseCase initializeNiceUseCase;
+    private final InitializeNiceUseCase initializeNiceUseCase;
     private final NiceCallBackUseCase niceCallBackUseCase;
     @GetMapping("/{mid}")
     public ResponseEntity<ApiResponse<CreateNiceApiRequestDataDto>> initNiceApi(

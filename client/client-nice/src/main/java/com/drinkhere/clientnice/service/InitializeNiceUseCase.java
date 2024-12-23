@@ -31,7 +31,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Service
 @RequiredArgsConstructor
-public class initializeNiceUseCase {
+public class InitializeNiceUseCase {
     private static final String REDIS_CRYPTO_KEY = "cryptoData";
     private static final String REDIS_CRYPTO_TOKEN_KEY = "cryptoToken";
     private static final Long REDIS_CRYPTO_TOKEN_EXPIRATION = 3300L;
