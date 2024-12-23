@@ -1,5 +1,6 @@
 package com.drinkhere.common.exception;
 
+import com.drinkhere.common.exception.clientnice.NiceException;
 import com.drinkhere.common.exception.oauth.AuthException;
 import com.drinkhere.common.exception.oauth.NotExistTokenException;
 import com.drinkhere.common.exception.oauth.OAuthException;
@@ -70,6 +71,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenException.class)
     protected ResponseEntity<ApiResponse<Void>> handleTokenException(TokenException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(NiceException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleNiceException(NiceException e) {
         return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
     }
 }

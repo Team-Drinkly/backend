@@ -22,30 +22,39 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String birthDate;
 
-    @Enumerated(EnumType.STRING)  // Gender 값을 String으로 저장
-    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)  // NationalInfo 값을 String으로 저장
-    @Column(name = "national_info")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "national_info", nullable = false)
     private NationalInfo nationalInfo;
 
-    @Enumerated(EnumType.STRING)  // MobileCo 값을 String으로 저장
-    @Column(name = "mobile_co")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mobile_co", nullable = false)
     private MobileCo mobileCo;
 
+    @Column(nullable = false)
     private String mobileNo;
 
+    @Column(nullable = false)
+    private String di;
+
     @Builder
-    public Member(String name, String birthDate, Gender gender, NationalInfo nationalInfo, MobileCo mobileCo, String mobileNo) {
+    public Member(String name, String birthDate, Gender gender, NationalInfo nationalInfo, MobileCo mobileCo, String mobileNo, String di) {
         this.name = name;
         this.birthDate = birthDate;
         this.gender = gender;
         this.nationalInfo = nationalInfo;
         this.mobileCo = mobileCo;
         this.mobileNo = mobileNo;
+        this.di = di;
     }
 }

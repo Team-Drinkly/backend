@@ -9,6 +9,7 @@ import com.drinkhere.domainrds.member.enums.Gender;
 import com.drinkhere.domainrds.member.enums.MobileCo;
 import com.drinkhere.domainrds.member.enums.NationalInfo;
 import com.drinkhere.domainrds.member.service.MemberCommandService;
+import com.drinkhere.domainrds.member.service.MemberQueryService;
 import com.drinkhere.infraredis.util.RedisUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 import static com.drinkhere.common.exception.clientnice.NiceErrorCode.*;
@@ -33,6 +36,7 @@ public class NiceCallBackUseCase {
     private final RedisUtil redisUtil;
     private final ObjectMapper objectMapper;
     private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
     private static final String REDIS_CRYPTO_KEY = "cryptoData";
     private static final String REDIS_REQUEST_NO_KEY_TEMPLATE = "memberId:%d:requestNo";
     private static final String SYMMETRIC_ENCRYPTION_ALGORITHM_AES = "AES";
@@ -48,6 +52,10 @@ public class NiceCallBackUseCase {
         // Redis에서 requestno 조회 후 복호화 결과의 requestno 비교
         getRequestNoFromRedisAndValidate(memberId, niceDecryptedData.requestNo());
 
+        // 성인 인증 및 DI 값으로 중복 계정 체크
+        validateAdult(niceDecryptedData.birthDate());
+        checkDuplicateAccountByDI(niceDecryptedData.di());
+
         // 복호화 결과 저장
         Member member = Member.builder()
                 .name(URLDecoder.decode(niceDecryptedData.utf8Name(), "UTF-8"))
@@ -56,11 +64,11 @@ public class NiceCallBackUseCase {
                 .nationalInfo(NationalInfo.fromValue(Integer.parseInt(niceDecryptedData.nationalInfo()))) // NationalInfo Enum 변환
                 .mobileCo(MobileCo.fromValue(Integer.parseInt(niceDecryptedData.mobileCo()))) // MobileCo Enum 변환
                 .mobileNo(niceDecryptedData.mobileNo())
+                .di(niceDecryptedData.di())
                 .build();
 
         memberCommandService.save(member);
     }
-
     /**--------------------------------------------------------------------------------------------**/
     // Redis에서 대칭키 조회 후 역직렬화
     private NiceCryptoData getCryptoDataFromRedisAndValidate() {
@@ -115,5 +123,31 @@ public class NiceCallBackUseCase {
         }
 
         return requestNoFromRedis;
+    }
+
+    private void validateAdult(String birthDate) {
+        // 생년월일 파싱 (yyyyMMdd 형식)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate birthDateLocal = LocalDate.parse(birthDate, formatter);
+
+        // 만 19년이 되는 해의 1월 1일
+        LocalDate adultStartDate = birthDateLocal.plusYears(19).withDayOfYear(1);
+
+        // 현재 날짜
+        LocalDate today = LocalDate.now();
+
+        // 만 19년이 되는 해의 1월 1일이 오늘 날짜 이후라면 예외 발생
+        if (today.isBefore(adultStartDate)) {
+            throw new NiceException(NOT_AN_ADULT);
+        }
+    }
+
+    private void checkDuplicateAccountByDI(String di) {
+        // MemberCommandService에서 DI 값으로 회원 조회
+        boolean isDuplicate = memberQueryService.existsByDi(di);
+
+        if (isDuplicate) {
+            throw new NiceException(DUPLICATE_ACCOUNT);
+        }
     }
 }

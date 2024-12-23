@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 public enum NiceErrorCode implements BaseErrorCode {
 
-    // 인증 관련 오류 (토큰 처리)
+    // 인증 관련 오류
     CRYPTO_TOKEN_REQUEST_FAILED("NICE API 암호화 토큰 요청에 실패했습니다. 다시 시도해주세요.", 1001, HttpStatus.BAD_REQUEST),
+    NOT_AN_ADULT("성인 인증에 실패했습니다. 민 19세 미만입니다.", 1002, HttpStatus.FORBIDDEN),
+    DUPLICATE_ACCOUNT("이미 가입한 회원입니다. 가입된 계정으로 로그인해주세요.", 1003, HttpStatus.FORBIDDEN),
 
     // 암호화/복호화 관련 오류
     HASH_ALGORITHM_NOT_FOUND("요청하신 해시 알고리즘을 찾을 수 없습니다.", 1006, HttpStatus.BAD_REQUEST),
