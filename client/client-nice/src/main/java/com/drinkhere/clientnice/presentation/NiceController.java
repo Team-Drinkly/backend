@@ -2,9 +2,8 @@ package com.drinkhere.clientnice.presentation;
 
 import com.drinkhere.clientnice.dto.response.CreateNiceApiRequestDataDto;
 import com.drinkhere.clientnice.service.NiceCallBackUseCase;
-import com.drinkhere.clientnice.service.NiceInitUseCase;
+import com.drinkhere.clientnice.service.initializeNiceUseCase;
 import com.drinkhere.common.response.ApiResponse;
-import com.drinkhere.common.response.BaseSuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +17,13 @@ import static com.drinkhere.clientnice.response.NiceSuccessStatus.PROCESS_CALLBA
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/nice")
 public class NiceController {
-    private final NiceInitUseCase niceInitUseCase;
+    private final initializeNiceUseCase initializeNiceUseCase;
     private final NiceCallBackUseCase niceCallBackUseCase;
     @GetMapping("/{mid}")
     public ResponseEntity<ApiResponse<CreateNiceApiRequestDataDto>> initNiceApi(
             @PathVariable("mid") Long memberId
     ){
-        return ApiResponse.success(INIT_NICE_API_SUCCESS, niceInitUseCase.initNiceApi(memberId));
+        return ApiResponse.success(INIT_NICE_API_SUCCESS, initializeNiceUseCase.initializeNiceApi(memberId));
     }
 
     @GetMapping("/call-back")
@@ -34,10 +33,7 @@ public class NiceController {
             @RequestParam("enc_data") String encData,
             @RequestParam("integrity_value") String integrityValue
     ) throws UnsupportedEncodingException {
-        // Call the use case to process the callback data
         niceCallBackUseCase.processCallback(memberId, encData);
-
-        // Return a successful response
         return ApiResponse.success(PROCESS_CALLBACK_SUCCESS);
     }
 

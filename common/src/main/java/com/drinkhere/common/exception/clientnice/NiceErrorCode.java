@@ -12,25 +12,27 @@ import org.springframework.http.ResponseEntity;
 public enum NiceErrorCode implements BaseErrorCode {
 
     // 인증 관련 오류 (토큰 처리)
-    INVALID_TOKEN("유효하지 않은 토큰입니다.", 1000, HttpStatus.BAD_REQUEST),
-    CRYPTO_TOKEN_REQUEST_FAILED("NICE API 암호화 토큰 요청에 실패했습니다.", 1001, HttpStatus.BAD_REQUEST),
-    CRYPTO_TOKEN_FETCH_FAILED("암호화 토큰 조회에 실패했습니다.", 1004, HttpStatus.INTERNAL_SERVER_ERROR),
+    CRYPTO_TOKEN_REQUEST_FAILED("NICE API 암호화 토큰 요청에 실패했습니다. 다시 시도해주세요.", 1001, HttpStatus.BAD_REQUEST),
 
     // 암호화/복호화 관련 오류
-    DECRYPTION_FAILED("데이터 복호화에 실패했습니다.", 1003, HttpStatus.INTERNAL_SERVER_ERROR),
-    ENCRYPTION_FAILED("암호화에 실패했습니다.", 1003, HttpStatus.INTERNAL_SERVER_ERROR),
-    INTEGRITY_VALUE_GENERATION_FAILED("무결성값 생성에 실패했습니다.", 1004, HttpStatus.INTERNAL_SERVER_ERROR),
-    SHA256_ALGORITHM_NOT_FOUND("SHA-256 알고리즘을 찾을 수 없습니다.", 1006, HttpStatus.INTERNAL_SERVER_ERROR),
+    HASH_ALGORITHM_NOT_FOUND("요청하신 해시 알고리즘을 찾을 수 없습니다.", 1006, HttpStatus.BAD_REQUEST),
+
+    INVALID_CIPHER_ALGORITHM("지원되지 않는 암호화 알고리즘 또는 패딩 방식입니다.", 1019, HttpStatus.BAD_REQUEST),
+    INVALID_CIPHER_PARAMETERS("복호화 키 또는 초기화 벡터가 유효하지 않습니다.", 1018, HttpStatus.BAD_REQUEST),
+    CIPHER_DECRYPTION_FAILED("복호화에 실패했습니다. 패딩 오류 또는 블록 크기 오류.", 1016, HttpStatus.BAD_REQUEST),
+
+    CREATE_INTEGRITY_VALUE_FAILED("무결성 체크값 생성에 실패했습니다: HMAC 알고리즘 초기화 실패 또는 키 유효성 오류", 1020, HttpStatus.BAD_REQUEST),
 
     // Redis 관련 오류
-    REDIS_SAVE_FAILED("Redis에 데이터를 저장하는 데 실패했습니다.", 1005, HttpStatus.INTERNAL_SERVER_ERROR),
-    CRYPTO_DATA_NOT_FOUND("Redis에 암호화 데이터를 찾을 수 없습니다.", 1002, HttpStatus.NOT_FOUND),
-    REQUEST_NO_NOT_FOUND("Redis에 RequestNo를 찾을 수 없습니다.", 1001, HttpStatus.NOT_FOUND),
-    REQUEST_NO_MISMATCH("RequestNo가 일치하지 않습니다.", 1002, HttpStatus.BAD_REQUEST),
+    REDIS_SAVE_FAILED("Redis에 데이터를 저장하는 데 실패했습니다. 다시 시도해주세요.", 1005, HttpStatus.INTERNAL_SERVER_ERROR),
 
-    // JSON 처리 관련 오류
-    JSON_PROCESSING_FAILED("JSON 직렬화에 실패했습니다.", 1007, HttpStatus.BAD_REQUEST),
-    PARSING_FAILED("JSON 데이터를 파싱하는 데 실패했습니다.", 1006, HttpStatus.BAD_REQUEST);
+    CRYPTO_DATA_NOT_FOUND("Redis에 CryptoData를 찾을 수 없습니다. 본인 인증을 다시 진행해주세요.", 1002, HttpStatus.NOT_FOUND),
+    REQUEST_NO_NOT_FOUND("Redis에 RequestNo를 찾을 수 없습니다. 본인 인증을 다시 진행해주세요.", 1001, HttpStatus.NOT_FOUND),
+    REQUEST_NO_MISMATCH("RequestNo가 일치하지 않습니다. 본인 인증을 다시 진행해주세요.", 1002, HttpStatus.BAD_REQUEST),
+
+    // 직렬화 / 역직렬화 처리 관련 오류
+    SERIALIZATION_FAILED("직렬화(객체 to 문자열)에 실패했습니다.", 1007, HttpStatus.INTERNAL_SERVER_ERROR),
+    DESERIALIZATION_FAILED("역직렬화(문자열 to 객체)에 실패했습니다.", 1006, HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String message;
     private final int errorCode;

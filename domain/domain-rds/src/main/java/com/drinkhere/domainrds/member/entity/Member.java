@@ -1,5 +1,6 @@
 package com.drinkhere.domainrds.member.entity;
 
+import com.drinkhere.domainrds.auditing.BaseTimeEntity;
 import com.drinkhere.domainrds.member.enums.Gender;
 import com.drinkhere.domainrds.member.enums.MobileCo;
 import com.drinkhere.domainrds.member.enums.NationalInfo;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
     private String name;
@@ -39,8 +40,7 @@ public class Member {
     private String mobileNo;
 
     @Builder
-    public Member(Long memberId, String name, String birthDate, Gender gender, NationalInfo nationalInfo, MobileCo mobileCo, String mobileNo) {
-        this.memberId = memberId;
+    public Member(String name, String birthDate, Gender gender, NationalInfo nationalInfo, MobileCo mobileCo, String mobileNo) {
         this.name = name;
         this.birthDate = birthDate;
         this.gender = gender;
