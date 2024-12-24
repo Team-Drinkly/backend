@@ -3,6 +3,7 @@ package com.drinkhere.domainrds.store.entity;
 import com.drinkhere.domainrds.store.enums.StoreImageCategory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,12 +15,19 @@ public class StoreImage {
     @Column(name = "store_image_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "store_image_path", nullable = false)
     private String storeImagePath;
 
-    @Column(nullable = false)
+    @Column(name = "store_image_category", nullable = false)
     private StoreImageCategory storeImageCategory;
 
-    @Column(nullable = false)
-    private int storeImageIndex;
+    @Column(name = "store_image_order", nullable = false)
+    private int storeImageOrder;
+
+    @Builder
+    public StoreImage(String storeImagePath, StoreImageCategory storeImageCategory, int storeImageOrder) {
+        this.storeImagePath = storeImagePath;
+        this.storeImageCategory = storeImageCategory;
+        this.storeImageOrder = storeImageOrder;
+    }
 }
