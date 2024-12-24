@@ -2,8 +2,19 @@ bootJar { enabled = false }
 jar { enabled = true }
 
 dependencies {
+
+	implementation project(':infra:infra-redis')
+
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+	// configuration properties
+	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}

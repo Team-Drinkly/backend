@@ -256,5 +256,11 @@ out/
 **/src/main/resources/application-s3-local.yml
 **/src/main/resources/application-s3-prod.yml
 
+**/src/main/resources/application-nice-local.yml
+**/src/main/resources/application-nice-prod.yml
+
+**/src/main/resources/application-auth-local.yml
+**/src/main/resources/application-auth-prod.yml
+
 # 깃허브 서브모듈 관련 폴더 ignore
 backend-submodule/

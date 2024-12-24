@@ -1,6 +1,14 @@
 package com.drinkhere.common.exception;
 
-
+import com.drinkhere.common.exception.clientnice.NiceException;
+import com.drinkhere.common.exception.oauth.AuthException;
+import com.drinkhere.common.exception.oauth.NotExistTokenException;
+import com.drinkhere.common.exception.oauth.OAuthException;
+import com.drinkhere.common.exception.oauth.OAuthNotFoundException;
+import com.drinkhere.common.exception.token.ExpiredTokenException;
+import com.drinkhere.common.exception.token.InvalidAuthorizationTypeException;
+import com.drinkhere.common.exception.token.InvalidTokenException;
+import com.drinkhere.common.exception.token.TokenException;
 import com.drinkhere.common.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,9 +34,48 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(CommonErrorCode.NOT_FOUND.getHttpStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(AuthException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleAuthException(AuthException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
-//        return ApiResponse.fail(CommonErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus(), ex.getMessage());
-//    }
+    @ExceptionHandler(NotExistTokenException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleNotExistTokenException(NotExistTokenException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(OAuthException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleOAuthException(OAuthException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(OAuthNotFoundException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleOAuthNotFoundException(OAuthNotFoundException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(ExpiredTokenException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleExpiredTokenException(ExpiredTokenException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(InvalidAuthorizationTypeException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleInvalidAuthorizationTypeException(InvalidAuthorizationTypeException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleInvalidTokenException(InvalidTokenException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(TokenException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleTokenException(TokenException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
+
+    @ExceptionHandler(NiceException.class)
+    protected ResponseEntity<ApiResponse<Void>> handleNiceException(NiceException e) {
+        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    }
 }

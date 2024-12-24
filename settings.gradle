@@ -15,6 +15,11 @@ include 'infra:infra-s3'
 
 // API 모듈
 include 'api:api-health-check'
+include 'api:api-auth'
+
+// Client 모듈
+include 'client:client-nice'
+//include 'client:client-tosspayments'
 
 // 실행 모듈
 include 'execute'
