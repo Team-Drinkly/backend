@@ -1,0 +1,46 @@
+
+// build.gradle groovy
+
+// spring rest docs
+ext {
+    snippetsDir = file('execute/build/generated-snippets')
+}
+
+tasks.named('asciidoctor') {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+
+    inputs.dir file('execute/src/main/docs/asciidoc') // AsciiDoc 파일 경로
+    outputs.dir file('build/docs/asciidoc') // 출력 경로
+
+    doFirst {
+        // 기존 docs 폴더를 삭제하여 새로운 결과물이 생성되도록 함
+        delete file('src/main/resources/docs')
+    }
+}
+
+tasks.named('test') {
+    outputs.dir snippetsDir // spring rest docs
+    useJUnitPlatform()
+}
+
+// spring rest docs
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+
+}
+
+// spring rest docs
+tasks.register('copyDocument', Copy) {
+    dependsOn asciidoctor
+    from layout.buildDirectory.dir("docs/asciidoc")
+    into layout.projectDirectory.dir("execute/src/main/resources/static/docs")
+}
+
+// spring rest docs
+tasks.named('build') {
+    dependsOn copyDocument
+}
