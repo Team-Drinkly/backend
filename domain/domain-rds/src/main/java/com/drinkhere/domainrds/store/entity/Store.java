@@ -1,5 +1,6 @@
 package com.drinkhere.domainrds.store.entity;
 
+import com.drinkhere.domainrds.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Store {
+public class Store extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
     private Long id;
@@ -35,8 +36,15 @@ public class Store {
     @Column(name = "available_beverage", nullable = false)
     private String availableBeverage;
 
+    @Column(nullable = false)
+    private String y; // 위도
+
+    @Column(nullable = false)
+    private String x; // 경도
+
+
     @Builder
-    public Store(String storeName, String description, String openingHour, String address, String storeNo, String instagram, String availableBeverage) {
+    public Store(String storeName, String description, String openingHour, String address, String storeNo, String instagram, String availableBeverage, String y, String x) {
         this.storeName = storeName;
         this.description = description;
         this.openingHour = openingHour;
@@ -44,5 +52,7 @@ public class Store {
         this.storeNo = storeNo;
         this.instagram = instagram;
         this.availableBeverage = availableBeverage;
+        this.y = y;
+        this.x = x;
     }
 }
