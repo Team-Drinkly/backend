@@ -12,6 +12,6 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse from(CustomException exception) {
-        return new ErrorResponse(exception.getBaseErrorCode());
+        return new ErrorResponse(exception.getErrorCode());
     }
 }

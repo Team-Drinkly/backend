@@ -18,7 +18,10 @@ public class IgnoredPathConsts {
         "/jwt", HttpMethod.GET,
         "/reissue",HttpMethod.POST,
         "/actuator/**", HttpMethod.GET,
-        "/user/landing", HttpMethod.POST
+        "/user/landing", HttpMethod.POST,
+        "/api/v1/nice/**" +
+                "" +
+                "", HttpMethod.GET
     );
 
 }
