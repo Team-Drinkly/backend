@@ -2,10 +2,10 @@ bootJar { enabled = false }
 jar { enabled = true }
 
 dependencies {
-
     implementation project(':domain:domain-rds')
     implementation project(':infra:infra-redis')
     implementation project(':infra:infra-s3')
+    implementation project(':client:client-nice')
     implementation project(':monitoring')
 
     // spring security
