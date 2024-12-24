@@ -5,4 +5,5 @@ dependencies {
 	implementation project(':domain:domain-rds')
 	implementation project(':infra:infra-s3')
 	implementation project(':infra:infra-redis')
+	implementation project(':client:client-geocoding')
 }

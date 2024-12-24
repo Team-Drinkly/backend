@@ -18,9 +18,9 @@ spring:
       - application-rds-local.yml
       - application-redis-local.yml
       - application-s3-local.yml
-      - application-hc-local.yml
       - application-nice-local.yml
       - application-auth-local.yml
+      - application-geocoding-local.yml
 
 logging:
   level:
@@ -38,9 +38,9 @@ spring:
       - application-rds-prod.yml
       - application-redis-prod.yml
       - application-s3-prod.yml
-      - application-hc-prod.yml
       - application-auth-prod.yml
       - application-nice-prod.yml
+      - application-geocoding-prod.yml
 
 logging:
   level:

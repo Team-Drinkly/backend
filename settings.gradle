@@ -9,16 +9,17 @@ include 'monitoring'
 // Domain 모듈
 include 'domain:domain-rds'
 
-// Infra 모듈
+// Infra 모듈 - 클라우드 서비스 관련
 include 'infra:infra-redis'
 include 'infra:infra-s3'
 
-// API 모듈
+// API 모듈 - 드링크히어 서비스 비즈니스 로직
 include 'api:api-store'
 include 'api:api-auth'
 
-// Client 모듈
+// Client 모듈 - 외부 API 통신용 모듈
 include 'client:client-nice'
+include 'client:client-geocoding'
 //include 'client:client-tosspayments'
 
 // 실행 모듈
