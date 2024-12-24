@@ -74,7 +74,7 @@ public class PresignedUrlAspect {
     private void processPresignedUrl(Object data) {
         for (Field field : data.getClass().getDeclaredFields()) {
             // filePath 필드만 찾아서 처리
-            if (field.getType().equals(String.class) && (field.getName().contains("filePath") || field.getName().contains("Paths"))) {
+            if (field.getType().equals(String.class) && (field.getName().contains("ImagePath") || field.getName().contains("ImagePaths"))) {
                 field.setAccessible(true);
                 try {
                     // 단일 filePath 값 처리

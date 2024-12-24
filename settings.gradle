@@ -14,7 +14,7 @@ include 'infra:infra-redis'
 include 'infra:infra-s3'
 
 // API 모듈
-include 'api:api-health-check'
+include 'api:api-store'
 include 'api:api-auth'
 
 // Client 모듈
