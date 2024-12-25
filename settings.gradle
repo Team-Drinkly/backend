@@ -16,6 +16,7 @@ include 'infra:infra-s3'
 // API 모듈 - 드링크히어 서비스 비즈니스 로직
 include 'api:api-store'
 include 'api:api-auth'
+include 'api:api-payment'
 
 // Client 모듈 - 외부 API 통신용 모듈
 include 'client:client-nice'
