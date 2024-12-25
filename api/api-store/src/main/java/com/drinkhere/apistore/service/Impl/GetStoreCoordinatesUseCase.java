@@ -1,6 +1,6 @@
-package com.drinkhere.apistore.service;
+package com.drinkhere.apistore.service.Impl;
 
-import com.drinkhere.clientgeocoding.dto.CoordinatesResponse;
+import com.drinkhere.clientgeocoding.dto.Coordinates;
 import com.drinkhere.clientgeocoding.service.GeocodingUseCase;
 import com.drinkhere.common.annotation.ApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class GetStoreCoordinatesUseCase {
     private final GeocodingUseCase geocodingUseCase;
 
-    public CoordinatesResponse getStoreGeocoding(String address) {
+    public Coordinates convertAddressToCoordinates(String address) {
         return geocodingUseCase.getCoordinates(address);
     }
 

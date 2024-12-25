@@ -24,10 +24,15 @@ public class StoreImage {
     @Column(name = "store_image_order", nullable = false)
     private int storeImageOrder;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
     @Builder
-    public StoreImage(String storeImagePath, StoreImageCategory storeImageCategory, int storeImageOrder) {
+    public StoreImage(String storeImagePath, StoreImageCategory storeImageCategory, int storeImageOrder, Store store) {
         this.storeImagePath = storeImagePath;
         this.storeImageCategory = storeImageCategory;
         this.storeImageOrder = storeImageOrder;
+        this.store = store;
     }
 }

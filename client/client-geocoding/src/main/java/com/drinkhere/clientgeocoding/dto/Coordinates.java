@@ -2,13 +2,13 @@ package com.drinkhere.clientgeocoding.dto;
 
 import com.drinkhere.clientgeocoding.webclient.dto.GeocodingResponse;
 
-public record CoordinatesResponse(
+public record Coordinates(
         String x, // 위도
         String y // 경도
 ) {
-    public static CoordinatesResponse from(GeocodingResponse geocodingResponse) {
+    public static Coordinates from(GeocodingResponse geocodingResponse) {
         GeocodingResponse.Address address = geocodingResponse.addresses().get(0);
-        return new CoordinatesResponse(
+        return new Coordinates(
                 address.x(),
                 address.y()
         );

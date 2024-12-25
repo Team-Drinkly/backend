@@ -1,4 +1,4 @@
-package com.drinkhere.clientgeocoding.response;
+package com.drinkhere.apistore.response;
 
 import com.drinkhere.common.response.BaseSuccessStatus;
 import lombok.Getter;
@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum StoreSuccessStatus implements BaseSuccessStatus {
-    GET_COORDINATES_SUCCESS(HttpStatus.OK, "주소 to 좌표 변환 성공");
+    GET_COORDINATES_SUCCESS(HttpStatus.OK, "주소 to 좌표 변환 성공"),
+    CREATE_STORE_SUCCESS(HttpStatus.CREATED, "제휴 매장 등록 성공")
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
