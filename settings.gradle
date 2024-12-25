@@ -21,7 +21,7 @@ include 'api:api-payment'
 // Client 모듈 - 외부 API 통신용 모듈
 include 'client:client-nice'
 include 'client:client-geocoding'
-//include 'client:client-tosspayments'
+include 'client:client-toss'
 
 // 실행 모듈
 include 'execute'

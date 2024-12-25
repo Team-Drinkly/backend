@@ -3,7 +3,6 @@ jar {enabled = false}
 
 dependencies {
 
-    implementation project(':api:api-health-check')
     implementation project(':api:api-auth')
     implementation project(':api:api-payment')
 	implementation project(':api:api-store')
