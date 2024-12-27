@@ -265,5 +265,8 @@ out/
 **/src/main/resources/application-geocoding-local.yml
 **/src/main/resources/application-geocoding-prod.yml
 
+**/src/main/resources/application-payment-local.yml
+**/src/main/resources/application-payment-prod.yml
+
 # 깃허브 서브모듈 관련 폴더 ignore
 backend-submodule/

@@ -21,6 +21,7 @@ spring:
       - application-nice-local.yml
       - application-auth-local.yml
       - application-geocoding-local.yml
+      - application-payment-local.yml
 
 logging:
   level:
@@ -41,6 +42,7 @@ spring:
       - application-auth-prod.yml
       - application-nice-prod.yml
       - application-geocoding-prod.yml
+      - application-payment-prod.yml
 
 logging:
   level:

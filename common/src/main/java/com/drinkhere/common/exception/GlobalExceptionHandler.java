@@ -1,15 +1,6 @@
 package com.drinkhere.common.exception;
 
-import com.drinkhere.common.exception.clientnice.NiceException;
-import com.drinkhere.common.exception.oauth.AuthException;
-import com.drinkhere.common.exception.oauth.NotExistTokenException;
-import com.drinkhere.common.exception.oauth.OAuthException;
-import com.drinkhere.common.exception.oauth.OAuthNotFoundException;
-import com.drinkhere.common.exception.token.ExpiredTokenException;
-import com.drinkhere.common.exception.token.InvalidAuthorizationTypeException;
-import com.drinkhere.common.exception.token.InvalidTokenException;
-import com.drinkhere.common.exception.token.TokenException;
-import com.drinkhere.common.response.ApiResponse;
+import com.drinkhere.common.response.ApplicationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,57 +16,24 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ApiResponse<Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        return ApiResponse.fail(CommonErrorCode.INVALID_PARAMETER.getHttpStatus(), e.getMessage());
+    protected ResponseEntity<ApplicationResponse<Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest().body(ApplicationResponse.badRequest(null, e.getMessage()));
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleNoSuchElementException(NoSuchElementException e) {
-        return ApiResponse.fail(CommonErrorCode.NOT_FOUND.getHttpStatus(), e.getMessage());
+    protected ResponseEntity<ApplicationResponse<Void>> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.status(404).body(ApplicationResponse.custom(null, 404, e.getMessage()));
     }
 
-    @ExceptionHandler(AuthException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleAuthException(AuthException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ApplicationResponse<Void>> handleGeneralException(Exception e) {
+        return ResponseEntity.internalServerError().body(ApplicationResponse.server(null, e.getMessage()));
     }
 
-    @ExceptionHandler(NotExistTokenException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleNotExistTokenException(NotExistTokenException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
+    // Add other specific exception handlers below
 
-    @ExceptionHandler(OAuthException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleOAuthException(OAuthException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(OAuthNotFoundException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleOAuthNotFoundException(OAuthNotFoundException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(ExpiredTokenException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleExpiredTokenException(ExpiredTokenException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(InvalidAuthorizationTypeException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleInvalidAuthorizationTypeException(InvalidAuthorizationTypeException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(InvalidTokenException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleInvalidTokenException(InvalidTokenException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(TokenException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleTokenException(TokenException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
-    }
-
-    @ExceptionHandler(NiceException.class)
-    protected ResponseEntity<ApiResponse<Void>> handleNiceException(NiceException e) {
-        return ApiResponse.fail(e.getErrorCode().getHttpStatus(), e.getErrorCode().getMessage());
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<ApplicationResponse<Void>> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(500).body(ApplicationResponse.server(null, e.getMessage()));
     }
 }

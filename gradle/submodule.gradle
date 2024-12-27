@@ -34,4 +34,10 @@ task copyPrivate(type: Copy) {
         include "application-auth-prod.yml"
         into 'api/api-auth/src/main/resources'
     }
+
+    copy {
+        from './backend-submodule'
+        include "application-payment-prod.yml"
+        into 'api/client-toss/src/main/resources'
+    }
 }
