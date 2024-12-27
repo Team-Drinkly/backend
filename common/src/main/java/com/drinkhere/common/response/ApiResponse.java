@@ -33,7 +33,8 @@ public class ApiResponse<T> {
                         .status(successStatus.getStatusCode())
                         .success(true)
                         .message(successStatus.getMessage())
-                        .data(data).build());
+                        .data(data)
+                        .build());
     }
 
     /**

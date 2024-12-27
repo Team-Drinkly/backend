@@ -6,31 +6,30 @@ import com.drinkhere.clienttoss.dto.cancel.CancelRequestDto;
 import com.drinkhere.clienttoss.dto.cancel.CancelResponseDto;
 import com.drinkhere.clienttoss.dto.payment.PaymentRequestDto;
 import com.drinkhere.clienttoss.dto.payment.PaymentResponseDto;
+import com.drinkhere.clienttoss.webclient.config.TossProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
+@RequiredArgsConstructor
 public class TossPaymentsUseCase {
 
     private final WebClient authorizeBillingWebClient;
     private final WebClient autoPaymentWebClient;
     private final WebClient cancelPaymentWebClient;
+    private final TossProperties tossProperties;
 
-    public TossPaymentsUseCase(WebClient authorizeBillingWebClient, WebClient autoPaymentWebClient, WebClient cancelPaymentWebClient) {
-        this.authorizeBillingWebClient = authorizeBillingWebClient;
-        this.autoPaymentWebClient = autoPaymentWebClient;
-        this.cancelPaymentWebClient = cancelPaymentWebClient;
-    }
-
-    public Mono<BillingResponseDto> issueBillingKeyAndAutoPay(BillingRequestDto billingRequestDto, String authHeader) {
+    public BillingResponseDto issueBillingKeyAndAutoPay(BillingRequestDto billingRequestDto) {
         return authorizeBillingWebClient.post()
                 .uri("")
-                .header("Authorization", "Basic " + authHeader)
+                .header("Authorization", "Basic " + tossProperties.getSecret())
                 .header("Content-Type", "application/json")
                 .bodyValue(billingRequestDto)
                 .retrieve()
-                .bodyToMono(BillingResponseDto.class);
+                .bodyToMono(BillingResponseDto.class)
+                .block();
     }
 
     public Mono<PaymentResponseDto> performAutoPayment(PaymentRequestDto paymentRequestDto, String authHeader) {
