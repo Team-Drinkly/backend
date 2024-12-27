@@ -1,11 +1,10 @@
 package com.drinkhere.common.exception.clientnice;
 
 import com.drinkhere.common.exception.BaseErrorCode;
-import com.drinkhere.common.response.ApiResponse;
+import com.drinkhere.common.response.ApplicationResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @Getter
 @AllArgsConstructor
@@ -42,7 +41,7 @@ public enum NiceErrorCode implements BaseErrorCode {
     private final HttpStatus httpStatus;
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> toResponseEntity() {
-        return ApiResponse.fail(httpStatus, message);
+    public ApplicationResponse<String> toResponseEntity() {
+        return ApplicationResponse.server(message);
     }
 }

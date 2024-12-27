@@ -3,7 +3,8 @@ package com.drinkhere.apipayment.presentation;
 import com.drinkhere.clienttoss.dto.billing.BillingRequestDto;
 import com.drinkhere.clienttoss.dto.billing.BillingResponseDto;
 import com.drinkhere.clienttoss.service.TossPaymentsUseCase;
-import com.drinkhere.common.response.ApiResponse;
+import com.drinkhere.common.response.ApplicationResponse;
+import com.drinkhere.common.response.ApplicationResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,11 +21,11 @@ public class PaymentController {
 
     // billing key 발급
     @PostMapping("/billing-key")
-    public ResponseEntity<ApiResponse<BillingResponseDto>> getBillingKey(
+    public ApplicationResponse<BillingResponseDto> getBillingKey(
             @RequestBody BillingRequestDto requestDto
     ) {
         BillingResponseDto responseDto = tossPaymentsUseCase.issueBillingKeyAndAutoPay(requestDto);
-        return ApiResponse.success(PaymentSuccessStatus.BILLING_KEY_ISSUED, responseDto);
+        return ApplicationResponse.ok(responseDto);
     }
 
     // 멤버십 자동 결제 승인

@@ -1,15 +1,11 @@
-package com.drinkhere.clientnice.presentation;
+package com.drinkhere.apiauth.presentation;
 
 import com.drinkhere.clientnice.dto.response.CreateNiceApiRequestDataDto;
 import com.drinkhere.clientnice.service.InitializeNiceUseCase;
 import com.drinkhere.clientnice.service.NiceCallBackUseCase;
-import com.drinkhere.common.response.ApiResponse;
+import com.drinkhere.common.response.ApplicationResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static com.drinkhere.clientnice.response.NiceSuccessStatus.INIT_NICE_API_SUCCESS;
-import static com.drinkhere.clientnice.response.NiceSuccessStatus.PROCESS_CALLBACK_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,22 +13,23 @@ import static com.drinkhere.clientnice.response.NiceSuccessStatus.PROCESS_CALLBA
 public class NiceController {
     private final InitializeNiceUseCase initializeNiceUseCase;
     private final NiceCallBackUseCase niceCallBackUseCase;
+
     @GetMapping("/{mid}")
-    public ResponseEntity<ApiResponse<CreateNiceApiRequestDataDto>> initNiceApi(
+    public ApplicationResponse<CreateNiceApiRequestDataDto> initNiceApi(
             @PathVariable("mid") Long memberId
-    ){
-        return ApiResponse.success(INIT_NICE_API_SUCCESS, initializeNiceUseCase.initializeNiceApi(memberId));
+    ) {
+        return ApplicationResponse.ok(initializeNiceUseCase.initializeNiceApi(memberId));
     }
 
     @GetMapping("/call-back")
-    public ResponseEntity<ApiResponse<String>> handleNiceCallBack(
+    public ApplicationResponse<String> handleNiceCallBack(
             @RequestParam("mid") Long memberId,
             @RequestParam("token_version_id") String tokenVersionId,
             @RequestParam("enc_data") String encData,
             @RequestParam("integrity_value") String integrityValue
     ) {
         niceCallBackUseCase.processCallback(memberId, encData);
-        return ApiResponse.success(PROCESS_CALLBACK_SUCCESS);
+        return ApplicationResponse.created("call-back url 생성");
     }
 
 }
