@@ -10,7 +10,6 @@ import com.drinkhere.clienttoss.webclient.config.TossProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -32,23 +31,25 @@ public class TossPaymentsUseCase {
                 .block();
     }
 
-    public Mono<PaymentResponseDto> performAutoPayment(PaymentRequestDto paymentRequestDto, String authHeader) {
+    public PaymentResponseDto performAutoPayment(PaymentRequestDto paymentRequestDto, String authHeader) {
         return autoPaymentWebClient.post()
                 .uri("/" + paymentRequestDto.billingKey())
                 .header("Authorization", "Basic " + authHeader)
                 .header("Content-Type", "application/json")
                 .bodyValue(paymentRequestDto)
                 .retrieve()
-                .bodyToMono(PaymentResponseDto.class);
+                .bodyToMono(PaymentResponseDto.class)
+                .block();
     }
 
-    public Mono<CancelResponseDto> cancelPayment(CancelRequestDto cancelRequestDto, String authHeader) {
+    public CancelResponseDto cancelPayment(CancelRequestDto cancelRequestDto, String authHeader) {
         return cancelPaymentWebClient.post()
                 .uri("/" + cancelRequestDto.paymentKey() + "/cancel")
                 .header("Authorization", "Basic " + authHeader)
                 .header("Content-Type", "application/json")
                 .bodyValue(cancelRequestDto)
                 .retrieve()
-                .bodyToMono(CancelResponseDto.class);
+                .bodyToMono(CancelResponseDto.class)
+                .block();
     }
 }
