@@ -13,9 +13,12 @@ public class OAuth {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long authId;
+    @Column(name = "oauth_id")
+    private Long id;
+
     @Enumerated(value = EnumType.STRING)
     private Provider provider;
+
     private String sub;
 
     private OAuth(Provider provider, String sub) {

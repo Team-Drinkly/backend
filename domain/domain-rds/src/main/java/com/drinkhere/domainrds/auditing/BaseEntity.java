@@ -17,5 +17,5 @@ public class BaseEntity extends BaseTimeEntity {
     private String createdBy;
 
     @LastModifiedBy
-    private String lastModifiedBy;
+    private String updatedBy;
 }

@@ -1,12 +1,13 @@
 package com.drinkhere.infras3.aop;
 
-import com.drinkhere.common.response.ApiResponse;
 import com.drinkhere.infras3.aop.Interface.TransformToPresignedUrl;
 import com.drinkhere.infras3.application.PresignedUrlService;
+import com.drinkhere.common.response.ApplicationResponse;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +15,13 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class PresignedUrlAspect {
 
     private final PresignedUrlService presignedUrlService;
-
 
     /**
      * RestController이면서 GetMapping일때 처리를 수행
@@ -34,8 +35,8 @@ public class PresignedUrlAspect {
         // ResponseEntity 객체가 반환되면
         if (result instanceof ResponseEntity<?> responseEntity) {
             Object body = responseEntity.getBody();
-            if (body instanceof ApiResponse<?> apiResponse) {
-                Object data = apiResponse.getData();
+            if (body instanceof ApplicationResponse<?> apiResponse) {
+                Object data = apiResponse.getPayload();
                 // 데이터가 존재하면 Presigned URL 처리
                 if (data != null) {
                     processIfPresignedUrlApplicable(data);
@@ -74,7 +75,7 @@ public class PresignedUrlAspect {
     private void processPresignedUrl(Object data) {
         for (Field field : data.getClass().getDeclaredFields()) {
             // filePath 필드만 찾아서 처리
-            if (field.getType().equals(String.class) && (field.getName().contains("filePath") || field.getName().contains("Paths"))) {
+            if (field.getType().equals(String.class) && (field.getName().contains("ImagePath") || field.getName().contains("ImagePaths"))) {
                 field.setAccessible(true);
                 try {
                     // 단일 filePath 값 처리

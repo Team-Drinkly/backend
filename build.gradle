@@ -61,34 +61,4 @@ configure(subprojects.findAll { it.name != 'common' && it.name != 'execute' }) {
 }
 
 // 서브모듈 설정파일 복사
-task copyPrivate(type: Copy) {
-	copy {
-		from './backend-submodule'
-		include "application-rds-prod.yml"
-		into 'domain/domain-rds/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-redis-prod.yml"
-		into 'infra/infra-redis/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-s3-prod.yml"
-		into 'infra/infra-s3/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-nice-prod.yml"
-		into 'client/client-nice/src/main/resources'
-	}
-
-	copy {
-		from './backend-submodule'
-		include "application-auth-prod.yml"
-		into 'api/api-auth/src/main/resources'
-	}
-}
+apply from: 'gradle/submodule.gradle'

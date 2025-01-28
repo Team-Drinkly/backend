@@ -1,15 +1,12 @@
-bootJar {
-    enabled = true
-}
-jar {
-    enabled = false
-}
+bootJar {enabled = true}
+jar {enabled = false}
 
 dependencies {
-    implementation project(':api:api-health-check')
-//    implementation project(':api:api-auth')
-    implementation project(':client:client-nice')
 
-    // WebClient
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation project(':api:api-auth')
+    implementation project(':api:api-payment')
+	implementation project(':api:api-store')
+
+    implementation project(':client:client-nice')
+    implementation project(':client:client-toss')
 }
